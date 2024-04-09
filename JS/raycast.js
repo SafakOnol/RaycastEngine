@@ -9,6 +9,8 @@ const MAP_NUM_COLS = 15;
 const WINDOW_WIDTH  = MAP_NUM_COLS * TILE_SIZE;
 const WINDOW_HEIGHT = MAP_NUM_ROWS * TILE_SIZE;
 
+const PLAYER_DIRECTION_LENGTH = 30;
+
 // ----- PROJECT CLASSES ----- // 
 class MyMap
 {
@@ -28,6 +30,19 @@ class MyMap
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]       
         ];
+    }
+
+    hasWallCollisionAt(x, y)
+    {
+        if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT)
+        {
+            return true; // return collision
+        }
+
+        var mapGridIndexX = Math.floor(x / TILE_SIZE);
+        var mapGridIndexY = Math.floor(y / TILE_SIZE);
+
+        return this.grid[mapGridIndexY][mapGridIndexX] != 0; // x and y, columns and rows inverted
     }
 
     render()
@@ -55,12 +70,12 @@ class Player
         this.x = WINDOW_WIDTH / 2;
         this.y = WINDOW_HEIGHT / 2; 
         //
-        this.radius = 3;
+        this.radius = 6;
         this.turnDirection = 0 ; // -1 if left, +1 if right
         this.walkDirection = 0;  // -1 if back, +1 if front
         this.rotationAngle = Math.PI / 2;
         this.moveSpeed = 2.0;
-        this.rotationSpeed = 2 * (Math.PI / 180); // 2 degrees converted to Radians
+        this.rotationSpeed = 10 * (Math.PI / 180); // 2 degrees converted to Radians
     }
 
     update()
@@ -68,14 +83,41 @@ class Player
         // TODO:
         // update player position based on turnDirection and walkDirection
         //console.log(this.turnDirection);
+        this.rotationAngle += this.turnDirection * this.rotationSpeed;
+
+        var moveStep = this.walkDirection * this.moveSpeed;
+
+        var newPlayerX = this.x + moveStep * cos(this.rotationAngle);
+        var newPlayerY = this.y + moveStep * sin(this.rotationAngle);
+
+        // Move player only if the new position isn't colliding with a wall
+        if(!grid.hasWallCollisionAt(newPlayerX, newPlayerY))
+        {
+            this.x = newPlayerX;
+            this.y = newPlayerY;
+        }
+  
     }
 
     render()
     {
+        // Player Position
+        noStroke();
         fill("red");
         circle(this.x, this.y, this.radius);
+        // Player Direction Indicator
+        stroke("red");
+        line
+        (
+            this.x,
+            this.y,
+            this.x + Math.cos(this.rotationAngle) * PLAYER_DIRECTION_LENGTH,
+            this.y + Math.sin(this.rotationAngle) * PLAYER_DIRECTION_LENGTH
+        );
     }
 }
+
+
 
 // ----- GLOBAL VARIABLES ----- //
 var grid = new MyMap();
@@ -133,7 +175,7 @@ function setup()
 function update()
 {
     // TODO: update all game objects here
-    player.update();
+    player.update();  
 }
 
 function draw()
