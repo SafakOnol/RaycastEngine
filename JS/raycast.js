@@ -9,13 +9,14 @@ const MAP_NUM_COLS = 15;
 const WINDOW_WIDTH  = MAP_NUM_COLS * TILE_SIZE;
 const WINDOW_HEIGHT = MAP_NUM_ROWS * TILE_SIZE;
 
-const PLAYER_DIRECTION_LENGTH = 30;
+const PLAYER_DIRECTION_LENGTH = 10;
 
 const FOV = 60 * (Math.PI / 180);
 
 const WALL_STRIP_WIDTH = 1; // Wall thickness in px
 const NUM_RAYS = WINDOW_WIDTH / WALL_STRIP_WIDTH;
 
+const MINIMAP_SCALE_FACTOR = 0.25;
 
 // ----- PROJECT CLASSES ----- // 
 class MyMap
@@ -62,7 +63,13 @@ class MyMap
                 var tileColor = this.grid[i][j] == 1 ? "#222" : "#fff";
                 stroke("#222");
                 fill(tileColor);
-                rect(tileX, tileY, TILE_SIZE, TILE_SIZE);
+                rect
+                (
+                    MINIMAP_SCALE_FACTOR * tileX, 
+                    MINIMAP_SCALE_FACTOR * tileY, 
+                    MINIMAP_SCALE_FACTOR * TILE_SIZE, 
+                    MINIMAP_SCALE_FACTOR * TILE_SIZE
+                );
             }
         }
     }
@@ -110,17 +117,22 @@ class Player
     {
         // Player Position
         noStroke();
-        fill("red");
-        circle(this.x, this.y, this.radius);
+        fill("blue");
+        circle
+        (
+            MINIMAP_SCALE_FACTOR * this.x, 
+            MINIMAP_SCALE_FACTOR * this.y, 
+            MINIMAP_SCALE_FACTOR * this.radius
+        );
         // Player Direction Indicator
-        // stroke("red");
-        // line
-        // (
-        //     this.x,
-        //     this.y,
-        //     this.x + Math.cos(this.rotationAngle) * PLAYER_DIRECTION_LENGTH,
-        //     this.y + Math.sin(this.rotationAngle) * PLAYER_DIRECTION_LENGTH
-        // );
+        stroke("blue");
+        line
+        (
+            MINIMAP_SCALE_FACTOR * this.x,
+            MINIMAP_SCALE_FACTOR * this.y,
+            MINIMAP_SCALE_FACTOR * this.x + Math.cos(this.rotationAngle) * PLAYER_DIRECTION_LENGTH,
+            MINIMAP_SCALE_FACTOR * this.y + Math.sin(this.rotationAngle) * PLAYER_DIRECTION_LENGTH
+        );
     }
 }
 
@@ -267,18 +279,23 @@ class Ray
 
     render()
     {
-        stroke("rgba(255, 0, 0, 0.2)");
+        stroke("rgba(255, 0, 0, 0.1)");
         line
         (
-            player.x,
-            player.y,
-            this.wallHitX,
-            this.wallHitY
+            MINIMAP_SCALE_FACTOR * player.x,
+            MINIMAP_SCALE_FACTOR * player.y,
+            MINIMAP_SCALE_FACTOR * this.wallHitX,
+            MINIMAP_SCALE_FACTOR * this.wallHitY
         );
 
-        stroke("rgba(80, 159, 60, 1)");
-        fill(0,0,0,0);
-        circle(this.wallHitX, this.wallHitY, 5);
+        // stroke("rgba(80, 159, 60, 1)");
+        // fill(0,0,0,0);
+        // circle
+        // (
+        //     MINIMAP_SCALE_FACTOR * this.wallHitX, 
+        //     MINIMAP_SCALE_FACTOR * this.wallHitY, 
+        //     MINIMAP_SCALE_FACTOR * 1
+        // );
     }
 
 }
