@@ -13,10 +13,10 @@ const PLAYER_DIRECTION_LENGTH = 10;
 
 const FOV = 60 * (Math.PI / 180);
 
-const WALL_STRIP_WIDTH = 1; // Wall thickness in px
+const WALL_STRIP_WIDTH = 20; // Wall thickness in px
 const NUM_RAYS = WINDOW_WIDTH / WALL_STRIP_WIDTH;
 
-const MINIMAP_SCALE_FACTOR = 0.25;
+const MINIMAP_SCALE_FACTOR = 0.20;
 
 // ----- PROJECT CLASSES ----- // 
 class MyMap
@@ -385,6 +385,33 @@ function distanceBetweenPoints(x1, y1, x2, y2)
     return Math.sqrt((x2-x1) * (x2-x1) + (y2-y1) * (y2-y1));
 }
 
+function renderWallProjection3D()
+{
+    // Loop every ray in the array rays[]
+    for (var i = 0; i < NUM_RAYS; i++)
+    {
+        var ray = rays[i];
+        
+        var rayDistance = ray.distance;
+
+        // the distance between player and projection plane
+        var distanceToProjectionPlane = (WINDOW_WIDTH * 0.5) * Math.tan(FOV * 0.5);
+
+        // projected wall height
+        var wallStripHeight = (TILE_SIZE / rayDistance) * distanceToProjectionPlane;
+
+        fill("rgba(255, 255, 255, 1.0")
+        noStroke()
+        rect
+        (
+            i * WALL_STRIP_WIDTH,
+            (WINDOW_HEIGHT * 0.5) - (wallStripHeight * 0.5),
+            WALL_STRIP_WIDTH,
+            wallStripHeight
+        )
+    }
+}
+
 // ----- GAME LOOP FUNCTIONS ----- // 
 function setup()
 {
@@ -402,10 +429,14 @@ function update()
 
 function draw()
 {
+    clear("#212121");
     update(); // update everything before render!
 
     // TODO: render all objects here
-    grid.render();
+
+    renderWallProjection3D();
+
+    grid.render(); // Minimap
     
     
     for (ray of rays)
