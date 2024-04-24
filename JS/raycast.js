@@ -3,8 +3,8 @@
 
 // ----- PROJECT CONSTANTS ----- ///
 const TILE_SIZE = 64;
-const MAP_NUM_ROWS = 11;
-const MAP_NUM_COLS = 15;
+const MAP_NUM_ROWS = 12;
+const MAP_NUM_COLS = 16;
 
 const WINDOW_WIDTH  = MAP_NUM_COLS * TILE_SIZE;
 const WINDOW_HEIGHT = MAP_NUM_ROWS * TILE_SIZE;
@@ -13,10 +13,10 @@ const PLAYER_DIRECTION_LENGTH = 10;
 
 const FOV = 60 * (Math.PI / 180);
 
-const WALL_STRIP_WIDTH = 20; // Wall thickness in px
+const WALL_STRIP_WIDTH = 1; // Wall thickness in px
 const NUM_RAYS = WINDOW_WIDTH / WALL_STRIP_WIDTH;
 
-const MINIMAP_SCALE_FACTOR = 0.20;
+const MINIMAP_SCALE_FACTOR = 0.2;
 
 // ----- PROJECT CLASSES ----- // 
 class MyMap
@@ -25,17 +25,18 @@ class MyMap
     {
         this.grid = 
         [   // 1 = wall (collision), 0 = empty (no collision)
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]       
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] 
         ];
     }
 
@@ -146,9 +147,9 @@ class Ray
         this.distance = 0;
         this.wasHitVertical = false;
 
-        this.isRayFacingDown    = this.rayAngle > 0 && this.rayAngle < Math.PI;
+        this.isRayFacingDown    =  this.rayAngle > 0 && this.rayAngle < Math.PI;
         this.isRayFacingUp      = !this.isRayFacingDown;
-        this.isRayFacingRight   = this.rayAngle < 0.5 * Math.PI || this.rayAngle > 1.5 * Math.PI;
+        this.isRayFacingRight   =  this.rayAngle < 0.5 * Math.PI || this.rayAngle > 1.5 * Math.PI;
         this.isRayFacingLeft    = !this.isRayFacingRight;
     }
 
@@ -165,15 +166,15 @@ class Ray
         var horizontalWallHitX = 0;
         var horizontalWallHitY = 0;
 
-        
         // Find the y-coordinate of the closest horizontal grid intersection
         yIntercept = Math.floor(player.y / TILE_SIZE) * TILE_SIZE;
         yIntercept += this.isRayFacingDown ? TILE_SIZE : 0;
 
-        console.log("isRayFacingRight?", this.isRayFacingRight);
+        //console.log("isRayFacingRight?", this.isRayFacingRight);
+        
         ///////////////////////////////////
         // Alternative Approach- SAFAK ONOL
-
+        //
         // if (this.isRayFacingUp)
         // {
         //     yIntercept = Math.floor(player.y / TILE_SIZE) * TILE_SIZE;
@@ -385,6 +386,19 @@ function distanceBetweenPoints(x1, y1, x2, y2)
     return Math.sqrt((x2-x1) * (x2-x1) + (y2-y1) * (y2-y1));
 }
 
+function renderBackground()
+{
+    // ceiling
+    fill("rgba(234, 144, 108, 1)");
+    noStroke();
+    rect( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // ground
+    fill("rgba(43, 42, 76, 1)");
+    noStroke();
+    rect( 0, WINDOW_HEIGHT * 0.5, WINDOW_WIDTH, WINDOW_HEIGHT);
+}
+
 function renderWallProjection3D()
 {
     // Loop every ray in the array rays[]
@@ -392,23 +406,44 @@ function renderWallProjection3D()
     {
         var ray = rays[i];
         
-        var rayDistance = ray.distance;
+        //var rayDistance = ray.distance;
+
+        // fix fisheye effect due to difference between rotation angle vs individual ray angle
+        var correctedWallDistance = ray.distance * Math.cos(ray.rayAngle - player.rotationAngle);
 
         // the distance between player and projection plane
         var distanceToProjectionPlane = (WINDOW_WIDTH * 0.5) * Math.tan(FOV * 0.5);
 
         // projected wall height
-        var wallStripHeight = (TILE_SIZE / rayDistance) * distanceToProjectionPlane;
+        var wallStripHeight = (TILE_SIZE / correctedWallDistance) * distanceToProjectionPlane;
 
-        fill("rgba(255, 255, 255, 1.0")
-        noStroke()
+        
+        // calculate the color fade depending on the wall distance
+
+        var fadeFactor = 2;
+        var alpha = distanceToProjectionPlane / (fadeFactor * correctedWallDistance) ;
+        
+        // render a wall background for color fade stability
+        fill("rgba(0, 0, 0, 1)");
+        noStroke();
         rect
         (
             i * WALL_STRIP_WIDTH,
             (WINDOW_HEIGHT * 0.5) - (wallStripHeight * 0.5),
             WALL_STRIP_WIDTH,
             wallStripHeight
-        )
+        );
+
+        // render a rectangle with the calculated wall height and fade according to distance
+        fill("rgba(179, 19, 18, " + alpha + ")");
+        noStroke();
+        rect
+        (
+            i * WALL_STRIP_WIDTH,
+            (WINDOW_HEIGHT * 0.5) - (wallStripHeight * 0.5),
+            WALL_STRIP_WIDTH,
+            wallStripHeight
+        );
     }
 }
 
@@ -429,11 +464,12 @@ function update()
 
 function draw()
 {
-    clear("#212121");
+    clear("#111");
+    
     update(); // update everything before render!
 
     // TODO: render all objects here
-
+    renderBackground();
     renderWallProjection3D();
 
     grid.render(); // Minimap
