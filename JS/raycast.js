@@ -153,7 +153,7 @@ class Ray
         this.isRayFacingLeft    = !this.isRayFacingRight;
     }
 
-    cast(columnId)
+    cast()
     {
         var xIntercept, yIntercept;
         var xStep, yStep;
@@ -162,7 +162,7 @@ class Ray
         /// HORIZONTAL RAY-GRID INTERSECTION CODE
         ////////////////////////////////////////////
 
-        var foundHorizontalWallHit = false;
+        var bHitHorizontalWall = false;
         var horizontalWallHitX = 0;
         var horizontalWallHitY = 0;
 
@@ -204,7 +204,7 @@ class Ray
         {
             if (grid.hasWallCollisionAt(nextHorizontalTileBorderX, nextHorizontalTileBorderY - (this.isRayFacingUp ? 1 : 0)))
             {
-                foundHorizontalWallHit = true;
+                bHitHorizontalWall = true;
                 horizontalWallHitX = nextHorizontalTileBorderX;
                 horizontalWallHitY = nextHorizontalTileBorderY;
 
@@ -222,7 +222,7 @@ class Ray
         /// VERTICAL RAY-GRID INTERSECTION CODE
         ////////////////////////////////////////////
 
-        var foundVerticalWallHit = false;
+        var bHitVerticalWall = false;
         var verticalWallHitX = 0;
         var verticalWallHitY = 0;
 
@@ -250,7 +250,7 @@ class Ray
         {
             if (grid.hasWallCollisionAt(nextVerticalTileBorderX - (this.isRayFacingLeft ? 1 : 0), nextVerticalTileBorderY))
             {
-                foundVerticalWallHit = true;
+                bHitVerticalWall = true;
                 verticalWallHitX = nextVerticalTileBorderX;
                 verticalWallHitY = nextVerticalTileBorderY;
 
@@ -264,18 +264,28 @@ class Ray
         }
 
         /// CALCULATE THE NEAREST HIT
-        var horizontalHitDistance = (foundHorizontalWallHit)
+        var horizontalHitDistance = (bHitHorizontalWall)
             ? distanceBetweenPoints(player.x, player.y, horizontalWallHitX, horizontalWallHitY)
             : Number.MAX_VALUE;
-        var verticalHitDistance = (foundVerticalWallHit)
+        var verticalHitDistance = (bHitVerticalWall)
             ? distanceBetweenPoints(player.x, player.y, verticalWallHitX, verticalWallHitY)
             : Number.MAX_VALUE;
 
         // only store the nearest hit point values
-        this.wallHitX = (horizontalHitDistance < verticalHitDistance) ? horizontalWallHitX : verticalWallHitX;
-        this.wallHitY = (horizontalHitDistance < verticalHitDistance) ? horizontalWallHitY : verticalWallHitY;
-        this.distance = (horizontalHitDistance < verticalHitDistance) ? horizontalHitDistance : verticalHitDistance;
-        this.wasHitVertical = (verticalHitDistance < horizontalHitDistance);
+        if (verticalHitDistance < horizontalHitDistance)
+        {
+            this.wallHitX = verticalWallHitX;
+            this.wallHitY = verticalWallHitY;
+            this.distance = verticalHitDistance;
+            this.wasHitVertical = true;
+        }
+        else
+        {
+            this.wallHitX = horizontalWallHitX;
+            this.wallHitY = horizontalWallHitY;
+            this.distance = horizontalHitDistance;
+            this.wasHitVertical = false;
+        }
     }
 
     render()
@@ -350,23 +360,20 @@ function keyReleased()
 
 function castAllRays()
 {
-    var columnId = 0;
-
     // start first ray by subtracting half of the FOV from rotationAngle
     var rayAngle = player.rotationAngle - (FOV / 2);
 
     rays = [];
 
     // loop all columns casting the rays
-    for (var i = 0; i < NUM_RAYS; i++)
+    for (var col = 0; col < NUM_RAYS; col++)
     //for (var i = 0; i < 1; i++)
     {
         var ray = new Ray(rayAngle);
-        ray.cast(columnId);
+        ray.cast();
 
         rays.push(ray); // add the ray to the list of rays
         rayAngle += FOV / NUM_RAYS;
-        columnId++;
     }
 
 }
@@ -420,9 +427,24 @@ function renderWallProjection3D()
         
         // calculate the color fade depending on the wall distance
 
-        var fadeFactor = 2;
-        var alpha = distanceToProjectionPlane / (fadeFactor * correctedWallDistance) ;
+        var fadeFactor = 1.5;
+        var alpha = 1.0;//distanceToProjectionPlane / (fadeFactor * correctedWallDistance) ;
+        var colorR = 179;
+        var colorG =  19;
+        var colorB =  18;
+
+
         
+
+        var intensityModifier = ray.wasHitVertical ? 1 : 0.8;
+
+        var colorIntensity = distanceToProjectionPlane / (fadeFactor * correctedWallDistance);
+
+        var renderR = Math.floor(Math.min(Math.floor(colorR * colorIntensity), colorR) * intensityModifier);
+        var renderG = Math.floor(Math.min(Math.floor(colorG * colorIntensity), colorG) * intensityModifier);
+        var renderB = Math.floor(Math.min(Math.floor(colorB * colorIntensity), colorB) * intensityModifier);
+
+        console.log("colorIntensity : " + colorIntensity);
         // render a wall background for color fade stability
         fill("rgba(0, 0, 0, 1)");
         noStroke();
@@ -435,7 +457,7 @@ function renderWallProjection3D()
         );
 
         // render a rectangle with the calculated wall height and fade according to distance
-        fill("rgba(179, 19, 18, " + alpha + ")");
+        fill("rgba(" + renderR + ", " + renderG + ", " + renderB + ", " + alpha + ")");
         noStroke();
         rect
         (
