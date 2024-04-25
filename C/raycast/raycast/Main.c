@@ -48,15 +48,57 @@ void DestroyWindow()
 	SDL_Quit();
 }
 
+void Setup()
+{
+	// TODO:
+	// Initialize game objects
+}
+
+void HandleInput()
+{
+	SDL_Event event;
+	SDL_PollEvent(&event);
+
+	switch (event.type)
+	{
+		case SDL_QUIT:
+		{
+			bIsGameRunning = FALSE;
+			break;
+		}
+		case SDL_KEYDOWN:
+		{
+			if (event.key.keysym.sym == SDLK_ESCAPE)
+			{
+				bIsGameRunning = FALSE;
+				break;
+			}
+		}
+	}
+}
+
+void Render()
+{
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // set color
+	SDL_RenderClear(renderer); // clear buffer
+
+	// TODO:
+	// render all game objects
+
+	SDL_RenderPresent(renderer); // swap buffer
+}
+
 int main(int argc, char* args[])
 {
 	bIsGameRunning = InitializeWindow();
 
+	Setup();
+
 	while (bIsGameRunning)
 	{
-		// handle input
+		HandleInput();
 		// update
-		// render
+		Render();
 	}
 
 	DestroyWindow();
