@@ -7,6 +7,8 @@ SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 int bIsGameRunning = FALSE;
 
+float playerX, playerY;
+
 int InitializeWindow()
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -52,6 +54,8 @@ void Setup()
 {
 	// TODO:
 	// Initialize game objects
+	playerX = WINDOW_WIDTH * 0.5;
+	playerY = WINDOW_HEIGHT * 0.5;
 }
 
 void HandleInput()
@@ -77,13 +81,20 @@ void HandleInput()
 	}
 }
 
+void Update()
+{
+	playerX += 0.0001f;
+}
+
 void Render()
 {
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // set color
+	SDL_SetRenderDrawColor(renderer, 35, 30, 35, 255); // set color
 	SDL_RenderClear(renderer); // clear buffer
-
-	// TODO:
-	// render all game objects
+	
+	// draw player
+	SDL_SetRenderDrawColor(renderer, 222, 238, 234, 255);
+	SDL_Rect pRect = { playerX, playerY, 20, 20 };
+	SDL_RenderFillRect(renderer, &pRect);
 
 	SDL_RenderPresent(renderer); // swap buffer
 }
@@ -97,7 +108,7 @@ int main(int argc, char* args[])
 	while (bIsGameRunning)
 	{
 		HandleInput();
-		// update
+		Update();
 		Render();
 	}
 
