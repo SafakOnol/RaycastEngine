@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include <SDL2/SDL.h>
 #include <math.h>
+#include <limits.h>
 
+#include <SDL2/SDL.h>
 #include "Constants.h"
 
 // MAP
@@ -33,6 +34,20 @@ struct Player
 	float walkSpeed;
 	float turnSpeed;
 } player ;
+
+struct Ray
+{
+	float rayAngle;
+	float wallHitX;
+	float wallHitY;
+	float distance;
+	int bIsVerticalHit;
+	int bFacingUp;
+	int bFacingDown;
+	int bFacingRight;
+	int bFacingLeft;
+	int wallHitContent;
+} rays[NUM_RAYS];
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -110,10 +125,182 @@ void ComputeDeltaTime()
 		SDL_Delay(timeToDelay);
 	}
 
-	deltaTime = (SDL_GetTicks() - ticks) / 1000.f; // seconds
+	deltaTime = (SDL_GetTicks() - ticks) * 0.001f; // seconds
 
 	// store the miliseconds of the current frame to use in next update
 	ticks = SDL_GetTicks();
+}
+
+float NormalizeAngle(float angle)
+{
+	angle = remainder(angle, TWO_PI);
+	if (angle < 0)
+	{
+		angle = TWO_PI + angle;
+	}
+	return angle;
+}
+
+float DistanceBetweenPoints(float x1, float y1, float x2, float y2)
+{
+	return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+void CastRay(float rayAngle, int stripID)
+{
+	rayAngle = NormalizeAngle(rayAngle);
+
+	int bIsRayFacingUp		= rayAngle > PI && rayAngle < TWO_PI;
+	int bIsRayFacingDown	= !bIsRayFacingUp;
+	int bIsRayFacingRight	= rayAngle < PI * 0.5 || rayAngle > PI * 1.5;
+	int bIsRayFacingLeft	= !bIsRayFacingRight;
+
+	float xIntercept, yIntercept;
+	float xStep, yStep;
+
+
+	///////////////////////////////////////
+	/// HORIZONTAL RAY-GRID INTERSECTION
+	///////////////////////////////////////
+
+	int		bHrznWallHit	= FALSE;
+	float	hrznWallHitX	= 0;
+	float	hrznWallHitY	= 0;
+	int		hrznWallContent	= 0;
+
+	// calculate coordinates of nearest horizontal grid intersection
+	// y
+	yIntercept = floor(player.y / TILE_SIZE) * TILE_SIZE;
+	yIntercept += bIsRayFacingDown ? TILE_SIZE : 0;
+	// x
+	xIntercept = player.x + (yIntercept - player.y) / tan(rayAngle);
+
+	// calculate step increments
+	yStep = TILE_SIZE;
+	yStep *= bIsRayFacingUp	? -1 : +1;
+
+	xStep = TILE_SIZE / tan(rayAngle);
+	xStep *= (bIsRayFacingLeft	&& xStep > 0)	? -1 : +1;
+	xStep *= (bIsRayFacingRight && xStep < 0)	? -1 : +1;
+
+	float nextHrznLineX = xIntercept;
+	float nextHrznLineY = yIntercept;
+
+	// Increment steps until hitting a wall
+	while (nextHrznLineX >= 0 && nextHrznLineX <= WINDOW_WIDTH && nextHrznLineY >= 0 && nextHrznLineY <= WINDOW_HEIGHT)
+	{
+		float xTemp = nextHrznLineX;
+		float yTemp = nextHrznLineY + (bIsRayFacingUp ? -1 : 0);
+
+		if (CheckCollision(xTemp, yTemp))
+		{
+			// ray hit a wall!
+			hrznWallHitX = nextHrznLineX;
+			hrznWallHitY = nextHrznLineY;
+			hrznWallContent = map[(int)floor(yTemp / TILE_SIZE)][(int)floor(xTemp / TILE_SIZE)];
+			bHrznWallHit = TRUE;
+			break;
+		}
+		else
+		{
+			nextHrznLineX += xStep;
+			nextHrznLineY += yStep;
+		}
+	}
+
+	///////////////////////////////////////
+	/// VERTICAL RAY-GRID INTERSECTION
+	///////////////////////////////////////
+
+	int		bVertWallHit	= FALSE;
+	float	vertWallHitX	= 0;
+	float	vertWallHitY	= 0;
+	int		vertWallContent = 0;
+
+	// calculate coordinates of nearest horizontal grid intersection
+	// x
+	xIntercept = floor(player.x / TILE_SIZE) * TILE_SIZE;
+	xIntercept += bIsRayFacingRight ? TILE_SIZE : 0;
+	// y
+	yIntercept = player.y + (xIntercept - player.x) / tan(rayAngle);
+
+	// calculate step increments
+	xStep = TILE_SIZE;
+	xStep *= bIsRayFacingLeft ? -1 : +1;
+
+	yStep = TILE_SIZE / tan(rayAngle);
+	yStep *= (bIsRayFacingUp	&& yStep > 0) ? -1 : +1;
+	yStep *= (bIsRayFacingDown	&& yStep < 0) ? -1 : +1;
+
+	float nextVertLineX = xIntercept;
+	float nextVertLineY = yIntercept;
+
+	// Increment steps until hitting a wall
+	while (nextVertLineX >= 0 && nextVertLineX <= WINDOW_WIDTH && nextVertLineY >= 0 && nextVertLineY <= WINDOW_HEIGHT)
+	{
+		float xTemp = nextVertLineX + (bIsRayFacingLeft ? -1 : 0);
+		float yTemp = nextVertLineY;
+
+		if (CheckCollision(xTemp, yTemp))
+		{
+			// ray hit a wall!
+			vertWallHitX = nextVertLineX;
+			vertWallHitY = nextVertLineY;
+			vertWallContent = map[(int)floor(yTemp / TILE_SIZE)][(int)floor(xTemp / TILE_SIZE)];
+			bVertWallHit = TRUE;
+			break;
+		}
+		else
+		{
+			nextVertLineX += xStep;
+			nextVertLineY += yStep;
+		}
+	}
+
+	// CALCULATE THE NEAREST HIT
+	float hrznHitDistance = bHrznWallHit
+		? DistanceBetweenPoints(player.x, player.y, hrznWallHitX, hrznWallHitY)
+		: INT_MAX;
+
+	float vertHitDistance = bVertWallHit
+		? DistanceBetweenPoints(player.x, player.y, vertWallHitX, vertWallHitY)
+		: INT_MAX;
+
+
+	if (vertHitDistance < hrznHitDistance)
+	{
+		rays[stripID].distance			= vertHitDistance;
+		rays[stripID].wallHitX			= vertWallHitX;
+		rays[stripID].wallHitY			= vertWallHitY;
+		rays[stripID].wallHitContent	= vertWallContent;
+		rays[stripID].bIsVerticalHit	= TRUE;
+	}
+	else
+	{
+		rays[stripID].distance			= hrznHitDistance;
+		rays[stripID].wallHitX			= hrznWallHitX;
+		rays[stripID].wallHitY			= hrznWallHitY;
+		rays[stripID].wallHitContent	= hrznWallContent;
+		rays[stripID].bIsVerticalHit	= FALSE;
+	}
+
+	rays[stripID].rayAngle		= rayAngle;
+	rays[stripID].bFacingUp		= bIsRayFacingUp;
+	rays[stripID].bFacingDown	= bIsRayFacingDown;
+	rays[stripID].bFacingRight	= bIsRayFacingRight;
+	rays[stripID].bFacingLeft	= bIsRayFacingLeft;
+}
+
+void CastAllRays()
+{
+	// start first ray subtracting half of our FOV
+	float rayAngle = player.rotationAngle - (FOV_ANGLE * 0.5);
+
+	for (int stripID = 0; stripID < NUM_RAYS; stripID++)
+	{
+		CastRay(rayAngle, stripID);
+		rayAngle += FOV_ANGLE / NUM_RAYS;
+	}
 }
 
 void RenderMap()
@@ -245,6 +432,7 @@ void Update()
 	ComputeDeltaTime();
 
 	MovePlayer(deltaTime);
+	CastAllRays();
 }
 
 void Render()
