@@ -6,8 +6,13 @@
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 int bIsGameRunning = FALSE;
+int ticks = 0;
+float deltaTime = 0;
+
 
 float playerX, playerY;
+
+// --- SDL FUNCTIONS --- //
 
 int InitializeWindow()
 {
@@ -50,13 +55,34 @@ void DestroyWindow()
 	SDL_Quit();
 }
 
-void Setup()
+// --- MAIN FUNCTIONS --- //
+
+void GameSetup()
 {
 	// TODO:
 	// Initialize game objects
 	playerX = WINDOW_WIDTH * 0.5;
 	playerY = WINDOW_HEIGHT * 0.5;
 }
+
+void ComputeDeltaTime()
+{
+	// remaining time to target frame in miliseconds
+	int timeToDelay = FRAME_TIME_LENGTH - (SDL_GetTicks() - ticks);
+
+	// check if delay is necessary
+	if (timeToDelay > 0 && timeToDelay <= FRAME_TIME_LENGTH)
+	{
+		SDL_Delay(timeToDelay);
+	}
+
+	deltaTime = (SDL_GetTicks() - ticks) / 1000.f; // seconds
+
+	// store the miliseconds of the current frame to use in next update
+	ticks = SDL_GetTicks();
+}
+
+// --- GAME LOOP FUNCTIONS --- //
 
 void HandleInput()
 {
@@ -83,7 +109,10 @@ void HandleInput()
 
 void Update()
 {
-	playerX += 0.0001f;
+	// Start with this
+	ComputeDeltaTime();
+
+	playerX += 20.0f * deltaTime;
 }
 
 void Render()
@@ -103,7 +132,7 @@ int main(int argc, char* args[])
 {
 	bIsGameRunning = InitializeWindow();
 
-	Setup();
+	GameSetup();
 
 	while (bIsGameRunning)
 	{
