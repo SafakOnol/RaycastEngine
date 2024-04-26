@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <math.h>
+
 #include "Constants.h"
 
 // MAP
@@ -25,7 +27,6 @@ struct Player
 {
 	float x, y;
 	float w, h;
-	float centerX, centerY;
 	int turnDirection; // -1 for Left, +1 for Right
 	int walkDirection; // -1 for Left, +1 for Right
 	float rotationAngle;
@@ -90,8 +91,6 @@ void GameSetup()
 	player.y = WINDOW_HEIGHT * 0.5;
 	player.w = 1;
 	player.h = 1;
-	player.centerX = player.x + player.w * 0.5;
-	player.centerY = player.y + player.h * 0.5;
 	player.turnDirection = 0;
 	player.walkDirection = 0;
 	player.rotationAngle = PI * 1.5;
@@ -141,15 +140,39 @@ void RenderMap()
 	}
 }
 
+
+int CheckCollision(float x, float y)
+{
+	if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT)
+	{
+		//printf("Player position out of bounds: (%f, %f)\n", x, y);
+		return TRUE; // return collision
+	}
+
+	int mapGridIndexX = (int)floor(x / TILE_SIZE);
+	int mapGridIndexY = (int)floor(y / TILE_SIZE);
+
+	printf("Player position: (%f, %f), Map Grid Index: (%d, %d)\n", x, y, mapGridIndexX, mapGridIndexY);
+
+	return map[mapGridIndexY][mapGridIndexX] != 0; // x and y, columns and rows inverted
+}
+
 void MovePlayer(float deltaTime)
 {
 	player.rotationAngle += player.turnDirection * (player.turnSpeed * deltaTime);
 
 	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
 
-	player.x += cos(player.rotationAngle) * moveStep;
-	player.y += sin(player.rotationAngle) * moveStep;
+	float newX = player.x + cos(player.rotationAngle) * moveStep;
+	float newY = player.y + sin(player.rotationAngle) * moveStep;
+
+	if (!CheckCollision(newX, newY))
+	{
+		player.x = newX;
+		player.y = newY;
+	}		
 }
+
 
 void RenderPlayer()
 {
