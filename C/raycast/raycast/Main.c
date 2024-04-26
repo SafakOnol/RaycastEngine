@@ -25,6 +25,7 @@ struct Player
 {
 	float x, y;
 	float w, h;
+	float centerX, centerY;
 	int turnDirection; // -1 for Left, +1 for Right
 	int walkDirection; // -1 for Left, +1 for Right
 	float rotationAngle;
@@ -87,12 +88,14 @@ void GameSetup()
 {
 	player.x = WINDOW_WIDTH  * 0.5;
 	player.y = WINDOW_HEIGHT * 0.5;
-	player.w = 5;
-	player.h = 5;
+	player.w = 1;
+	player.h = 1;
+	player.centerX = player.x + player.w * 0.5;
+	player.centerY = player.y + player.h * 0.5;
 	player.turnDirection = 0;
 	player.walkDirection = 0;
 	player.rotationAngle = PI * 1.5;
-	player.turnSpeed = 45 * (PI / 180);
+	player.turnSpeed = 135 * (PI / 180);
 	player.walkSpeed = 100;
 
 }
@@ -138,6 +141,38 @@ void RenderMap()
 	}
 }
 
+void MovePlayer(float deltaTime)
+{
+	player.rotationAngle += player.turnDirection * (player.turnSpeed * deltaTime);
+
+	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
+
+	player.x += cos(player.rotationAngle) * moveStep;
+	player.y += sin(player.rotationAngle) * moveStep;
+}
+
+void RenderPlayer()
+{
+	SDL_SetRenderDrawColor(renderer, 255, 173, 90, 255);
+	SDL_Rect playerRect =
+	{
+		player.x * MINIMAP_SCALE_FACTOR,
+		player.y * MINIMAP_SCALE_FACTOR,
+		player.w * MINIMAP_SCALE_FACTOR,
+		player.h * MINIMAP_SCALE_FACTOR
+	};
+	SDL_RenderFillRect(renderer, &playerRect);
+
+	SDL_RenderDrawLine
+	(
+		renderer,
+		MINIMAP_SCALE_FACTOR * player.x,
+		MINIMAP_SCALE_FACTOR * player.y,
+		MINIMAP_SCALE_FACTOR * player.x + cos(player.rotationAngle) * 40,
+		MINIMAP_SCALE_FACTOR * player.y + sin(player.rotationAngle) * 40
+	);
+}
+
 // --- GAME LOOP FUNCTIONS --- //
 
 void HandleInput()
@@ -155,10 +190,28 @@ void HandleInput()
 		case SDL_KEYDOWN:
 		{
 			if (event.key.keysym.sym == SDLK_ESCAPE)
-			{
 				bIsGameRunning = FALSE;
-				break;
-			}
+			if (event.key.keysym.sym == SDLK_UP)
+				player.walkDirection = +1;
+			if (event.key.keysym.sym == SDLK_DOWN)
+				player.walkDirection = -1;
+			if (event.key.keysym.sym == SDLK_RIGHT)
+				player.turnDirection = +1;
+			if (event.key.keysym.sym == SDLK_LEFT)
+				player.turnDirection = -1;
+			break;
+		}
+		case SDL_KEYUP:
+		{
+			if (event.key.keysym.sym == SDLK_UP)
+				player.walkDirection = 0;
+			if (event.key.keysym.sym == SDLK_DOWN)
+				player.walkDirection = 0;
+			if (event.key.keysym.sym == SDLK_RIGHT)
+				player.turnDirection = 0;
+			if (event.key.keysym.sym == SDLK_LEFT)
+				player.turnDirection = 0;
+			break;
 		}
 	}
 }
@@ -168,6 +221,7 @@ void Update()
 	// Start with this
 	ComputeDeltaTime();
 
+	MovePlayer(deltaTime);
 }
 
 void Render()
@@ -177,7 +231,7 @@ void Render()
 	
 	RenderMap();
 	// RenderRays
-	// RenderPlayer
+	RenderPlayer();
 
 
 	SDL_RenderPresent(renderer); // swap buffer
