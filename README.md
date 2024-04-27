@@ -1,3 +1,3 @@
 # RaycastEngine
 
-Play here: https://safakonol.github.io/RaycastJS/
+Play JavaScript protype here: https://safakonol.github.io/RaycastJS/
