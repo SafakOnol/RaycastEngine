@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include "Constants.h"
 
+
 // MAP
 const int map[MAP_NUM_ROWS][MAP_NUM_COLS] = 
 {
@@ -23,6 +24,7 @@ const int map[MAP_NUM_ROWS][MAP_NUM_COLS] =
 	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
 };
 
+// --- WRAPPERS --- //
 
 struct Player
 {
@@ -48,6 +50,8 @@ struct Ray
 	int bFacingLeft;
 	int wallHitContent;
 } rays[NUM_RAYS];
+
+// --- GLOBAL VARIABLES --- //
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
@@ -98,23 +102,9 @@ void DestroyWindow()
 	SDL_Quit();
 }
 
-// --- MAIN FUNCTIONS --- //
+// --- HELPER FUNCTIONS --- //
 
-void GameSetup()
-{
-	player.x = WINDOW_WIDTH  * 0.5;
-	player.y = WINDOW_HEIGHT * 0.5;
-	player.w = 1;
-	player.h = 1;
-	player.turnDirection = 0;
-	player.walkDirection = 0;
-	player.rotationAngle = PI * 1.5;
-	player.turnSpeed = 135 * (PI / 180);
-	player.walkSpeed = 100;
-
-}
-
-void ComputeDeltaTime()
+void ComputeDeltaTime() // cricital!
 {
 	// remaining time to target frame in miliseconds
 	int timeToDelay = FRAME_TIME_LENGTH - (SDL_GetTicks() - ticks);
@@ -144,6 +134,76 @@ float NormalizeAngle(float angle)
 float DistanceBetweenPoints(float x1, float y1, float x2, float y2)
 {
 	return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+// --- MAIN FUNCTIONS --- //
+
+void GameSetup()
+{
+	player.x = WINDOW_WIDTH  * 0.5;
+	player.y = WINDOW_HEIGHT * 0.5;
+	player.w = 1;
+	player.h = 1;
+	player.turnDirection = 0;
+	player.walkDirection = 0;
+	player.rotationAngle = PI * 1.5;
+	player.turnSpeed = 135 * (PI / 180);
+	player.walkSpeed = 100;
+
+}
+
+int CheckCollision(float x, float y)
+{
+	if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT)
+	{
+		//printf("Player position out of bounds: (%f, %f)\n", x, y);
+		return TRUE; // return collision
+	}
+
+	int mapGridIndexX = (int)floor(x / TILE_SIZE);
+	int mapGridIndexY = (int)floor(y / TILE_SIZE);
+
+	//printf("Player position: (%f, %f), Map Grid Index: (%d, %d)\n", x, y, mapGridIndexX, mapGridIndexY);
+
+	return map[mapGridIndexY][mapGridIndexX] != 0; // x and y, columns and rows inverted
+}
+
+void MovePlayer(float deltaTime)
+{
+	player.rotationAngle += player.turnDirection * (player.turnSpeed * deltaTime);
+
+	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
+
+	float newX = player.x + cos(player.rotationAngle) * moveStep;
+	float newY = player.y + sin(player.rotationAngle) * moveStep;
+
+	if (!CheckCollision(newX, newY))
+	{
+		player.x = newX;
+		player.y = newY;
+	}
+}
+
+void RenderPlayer()
+{
+	SDL_SetRenderDrawColor(renderer, 255, 173, 90, 255);
+	SDL_Rect playerRect =
+	{
+		player.x * MINIMAP_SCALE_FACTOR,
+		player.y * MINIMAP_SCALE_FACTOR,
+		player.w * MINIMAP_SCALE_FACTOR,
+		player.h * MINIMAP_SCALE_FACTOR
+	};
+	SDL_RenderFillRect(renderer, &playerRect);
+
+	SDL_RenderDrawLine
+	(
+		renderer,
+		MINIMAP_SCALE_FACTOR * player.x,
+		MINIMAP_SCALE_FACTOR * player.y,
+		MINIMAP_SCALE_FACTOR * player.x + cos(player.rotationAngle) * 40,
+		MINIMAP_SCALE_FACTOR * player.y + sin(player.rotationAngle) * 40
+	);
 }
 
 void CastRay(float rayAngle, int stripID)
@@ -177,11 +237,11 @@ void CastRay(float rayAngle, int stripID)
 
 	// calculate step increments
 	yStep = TILE_SIZE;
-	yStep *= bIsRayFacingUp	? -1 : +1;
+	yStep *= bIsRayFacingUp	? -1 : 1;
 
 	xStep = TILE_SIZE / tan(rayAngle);
-	xStep *= (bIsRayFacingLeft	&& xStep > 0)	? -1 : +1;
-	xStep *= (bIsRayFacingRight && xStep < 0)	? -1 : +1;
+	xStep *= (bIsRayFacingLeft	&& xStep > 0)	? -1 : 1;
+	xStep *= (bIsRayFacingRight && xStep < 0)	? -1 : 1;
 
 	float nextHrznLineX = xIntercept;
 	float nextHrznLineY = yIntercept;
@@ -222,15 +282,15 @@ void CastRay(float rayAngle, int stripID)
 	xIntercept = floor(player.x / TILE_SIZE) * TILE_SIZE;
 	xIntercept += bIsRayFacingRight ? TILE_SIZE : 0;
 	// y
-	yIntercept = player.y + (xIntercept - player.x) / tan(rayAngle);
+	yIntercept = player.y + (xIntercept - player.x) * tan(rayAngle);
 
 	// calculate step increments
 	xStep = TILE_SIZE;
-	xStep *= bIsRayFacingLeft ? -1 : +1;
+	xStep *= bIsRayFacingLeft ? -1 : 1;
 
-	yStep = TILE_SIZE / tan(rayAngle);
-	yStep *= (bIsRayFacingUp	&& yStep > 0) ? -1 : +1;
-	yStep *= (bIsRayFacingDown	&& yStep < 0) ? -1 : +1;
+	yStep = TILE_SIZE * tan(rayAngle);
+	yStep *= (bIsRayFacingUp	&& yStep > 0) ? -1 : 1;
+	yStep *= (bIsRayFacingDown	&& yStep < 0) ? -1 : 1;
 
 	float nextVertLineX = xIntercept;
 	float nextVertLineY = yIntercept;
@@ -327,60 +387,20 @@ void RenderMap()
 	}
 }
 
-
-int CheckCollision(float x, float y)
+void RenderRays()
 {
-	if (x < 0 || x > WINDOW_WIDTH || y < 0 || y > WINDOW_HEIGHT)
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
+	for (int i = 0; i < NUM_RAYS; i++)
 	{
-		//printf("Player position out of bounds: (%f, %f)\n", x, y);
-		return TRUE; // return collision
+		SDL_RenderDrawLine
+		(
+			renderer,
+			MINIMAP_SCALE_FACTOR * player.x,
+			MINIMAP_SCALE_FACTOR * player.y,
+			MINIMAP_SCALE_FACTOR * rays[i].wallHitX,
+			MINIMAP_SCALE_FACTOR * rays[i].wallHitY
+		);
 	}
-
-	int mapGridIndexX = (int)floor(x / TILE_SIZE);
-	int mapGridIndexY = (int)floor(y / TILE_SIZE);
-
-	printf("Player position: (%f, %f), Map Grid Index: (%d, %d)\n", x, y, mapGridIndexX, mapGridIndexY);
-
-	return map[mapGridIndexY][mapGridIndexX] != 0; // x and y, columns and rows inverted
-}
-
-void MovePlayer(float deltaTime)
-{
-	player.rotationAngle += player.turnDirection * (player.turnSpeed * deltaTime);
-
-	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
-
-	float newX = player.x + cos(player.rotationAngle) * moveStep;
-	float newY = player.y + sin(player.rotationAngle) * moveStep;
-
-	if (!CheckCollision(newX, newY))
-	{
-		player.x = newX;
-		player.y = newY;
-	}		
-}
-
-
-void RenderPlayer()
-{
-	SDL_SetRenderDrawColor(renderer, 255, 173, 90, 255);
-	SDL_Rect playerRect =
-	{
-		player.x * MINIMAP_SCALE_FACTOR,
-		player.y * MINIMAP_SCALE_FACTOR,
-		player.w * MINIMAP_SCALE_FACTOR,
-		player.h * MINIMAP_SCALE_FACTOR
-	};
-	SDL_RenderFillRect(renderer, &playerRect);
-
-	SDL_RenderDrawLine
-	(
-		renderer,
-		MINIMAP_SCALE_FACTOR * player.x,
-		MINIMAP_SCALE_FACTOR * player.y,
-		MINIMAP_SCALE_FACTOR * player.x + cos(player.rotationAngle) * 40,
-		MINIMAP_SCALE_FACTOR * player.y + sin(player.rotationAngle) * 40
-	);
 }
 
 // --- GAME LOOP FUNCTIONS --- //
@@ -441,7 +461,7 @@ void Render()
 	SDL_RenderClear(renderer); // clear buffer
 	
 	RenderMap();
-	// RenderRays
+	RenderRays();
 	RenderPlayer();
 
 
