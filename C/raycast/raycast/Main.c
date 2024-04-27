@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <math.h>
 #include <limits.h>
 
 #include <SDL2/SDL.h>
+
 #include "Constants.h"
 
 
@@ -59,6 +59,10 @@ int bIsGameRunning = FALSE;
 int ticks = 0;
 float deltaTime = 0;
 
+Uint32* colorBuffer = NULL;
+
+SDL_Texture* colorBufferTexture;
+
 // --- SDL FUNCTIONS --- //
 
 int InitializeWindow()
@@ -97,6 +101,9 @@ int InitializeWindow()
 
 void DestroyWindow()
 {
+	free(colorBuffer);
+	SDL_DestroyTexture(colorBufferTexture);
+
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
@@ -150,6 +157,17 @@ void GameSetup()
 	player.turnSpeed = 135 * (PI / 180);
 	player.walkSpeed = 100;
 
+	// allocate memory for color buffer
+	colorBuffer = (Uint32*) malloc(sizeof(Uint32) * (Uint32)WINDOW_WIDTH * (Uint32)WINDOW_HEIGHT);
+
+	colorBufferTexture = SDL_CreateTexture
+	(
+		renderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		WINDOW_WIDTH,
+		WINDOW_HEIGHT
+	);
 }
 
 int CheckCollision(float x, float y)
@@ -201,8 +219,8 @@ void RenderPlayer()
 		renderer,
 		MINIMAP_SCALE_FACTOR * player.x,
 		MINIMAP_SCALE_FACTOR * player.y,
-		MINIMAP_SCALE_FACTOR * player.x + cos(player.rotationAngle) * 40,
-		MINIMAP_SCALE_FACTOR * player.y + sin(player.rotationAngle) * 40
+		MINIMAP_SCALE_FACTOR * player.x + cos(player.rotationAngle) * 10,
+		MINIMAP_SCALE_FACTOR * player.y + sin(player.rotationAngle) * 10
 	);
 }
 
@@ -320,11 +338,11 @@ void CastRay(float rayAngle, int stripID)
 	// CALCULATE THE NEAREST HIT
 	float hrznHitDistance = bHrznWallHit
 		? DistanceBetweenPoints(player.x, player.y, hrznWallHitX, hrznWallHitY)
-		: INT_MAX;
+		: (float)INT_MAX;
 
 	float vertHitDistance = bVertWallHit
 		? DistanceBetweenPoints(player.x, player.y, vertWallHitX, vertWallHitY)
-		: INT_MAX;
+		: (float)INT_MAX;
 
 
 	if (vertHitDistance < hrznHitDistance)
@@ -363,6 +381,14 @@ void CastAllRays()
 	}
 }
 
+/// <Color Palet>
+/// #ff124f 255 - 018 - 079
+/// #ff00a0 255 - 000 - 160
+/// #fe75fe 254 - 117 - 254
+/// #7a04eb 122 - 004 - 235
+/// #120458 018 - 004 - 088
+/// </Color Palet>
+
 void RenderMap()
 {
 	for (int i = 0; i < MAP_NUM_ROWS; i++)
@@ -371,9 +397,9 @@ void RenderMap()
 		{
 			int tileX = j * TILE_SIZE;
 			int tileY = i * TILE_SIZE;
-			int tileColorR = map[i][j] != 0 ? 26  : 79;
-			int tileColorG = map[i][j] != 0 ? 8   : 157;
-			int tileColorB = map[i][j] != 0 ? 65  : 166;
+			int tileColorR = map[i][j] != 0 ? 254 : 122 ;
+			int tileColorG = map[i][j] != 0 ? 117 : 004	;
+			int tileColorB = map[i][j] != 0 ? 254 : 235	;
 
 			SDL_SetRenderDrawColor(renderer, tileColorR, tileColorG, tileColorB, 255);
 			SDL_Rect mapTileRect = {
@@ -389,7 +415,7 @@ void RenderMap()
 
 void RenderRays()
 {
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
+	SDL_SetRenderDrawColor(renderer, 255, 0, 160, 100);
 	for (int i = 0; i < NUM_RAYS; i++)
 	{
 		SDL_RenderDrawLine
@@ -402,6 +428,32 @@ void RenderRays()
 		);
 	}
 }
+
+void ClearColorBuffer(Uint32 color)
+{
+	for (int x = 0; x < WINDOW_WIDTH; x++)
+	{
+		for (int y = 0; y < WINDOW_HEIGHT; y++)
+		{
+			colorBuffer[y * WINDOW_WIDTH + x] = color;
+		}
+	}
+}
+
+void RenderColorBuffer()
+{
+	SDL_UpdateTexture
+	(
+		colorBufferTexture,
+		NULL,
+		colorBuffer,
+		(int)(Uint32)WINDOW_WIDTH * sizeof(Uint32)
+	);
+
+	SDL_RenderCopy(renderer, colorBufferTexture, NULL, NULL);
+}
+
+
 
 // --- GAME LOOP FUNCTIONS --- //
 
@@ -457,9 +509,13 @@ void Update()
 
 void Render()
 {
-	SDL_SetRenderDrawColor(renderer, 255, 89, 89, 255); // set color
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // set color
 	SDL_RenderClear(renderer); // clear buffer
 	
+	RenderColorBuffer();
+	ClearColorBuffer(0xFF00FFCC);
+
+	// Display Minimap
 	RenderMap();
 	RenderRays();
 	RenderPlayer();
