@@ -445,10 +445,22 @@ void RenderWallProjection()
 		int wallBottomPixel = (WINDOW_HEIGHT * 0.5) + (wallStripHeight * 0.5);
 		wallBottomPixel = wallBottomPixel > WINDOW_HEIGHT ? WINDOW_HEIGHT : wallBottomPixel;
 
+		// render ceiling
+		for (int c = 0; c < wallTopPixel; c++)
+		{
+			colorBuffer[(WINDOW_WIDTH * c) + i] = 0xFF092047;
+		}
+
 		// render the wall from top to bottom
 		for (int y = wallTopPixel; y < wallBottomPixel; y++)
 		{
-			colorBuffer[(WINDOW_WIDTH * y) + i] = rays[i].bIsVerticalHit ?  0xFFB7C1DE : 0xFFA7B1CE;
+			colorBuffer[(WINDOW_WIDTH * y) + i] = rays[i].bIsVerticalHit ?  0xFFB7C1DE : 0xFFA7B1CE;	
+		}
+		
+		// render floor
+		for (int f = wallBottomPixel; f < WINDOW_HEIGHT; f++)
+		{
+			colorBuffer[(WINDOW_WIDTH * f) + i] = 0xFF0B468C;
 		}
 	}
 
@@ -540,7 +552,7 @@ void Render()
 	RenderWallProjection();
 	
 	RenderColorBuffer();
-	ClearColorBuffer(0xFF092047);
+	ClearColorBuffer(0xFF000000);
 
 	// Display Minimap
 	RenderMap();
