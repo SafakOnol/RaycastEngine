@@ -382,11 +382,11 @@ void CastAllRays()
 }
 
 /// <Color Palet>
-/// #ff124f 255 - 018 - 079
-/// #ff00a0 255 - 000 - 160
-/// #fe75fe 254 - 117 - 254
-/// #7a04eb 122 - 004 - 235
-/// #120458 018 - 004 - 088
+/// #63345E 
+/// #AC61B9 
+/// #B7C1DE 
+/// #0B468C 
+/// #092047 
 /// </Color Palet>
 
 void RenderMap()
@@ -397,9 +397,9 @@ void RenderMap()
 		{
 			int tileX = j * TILE_SIZE;
 			int tileY = i * TILE_SIZE;
-			int tileColorR = map[i][j] != 0 ? 254 : 122 ;
-			int tileColorG = map[i][j] != 0 ? 117 : 004	;
-			int tileColorB = map[i][j] != 0 ? 254 : 235	;
+			int tileColorR = map[i][j] != 0 ? 255 : 0;
+			int tileColorG = map[i][j] != 0 ? 255 : 0;
+			int tileColorB = map[i][j] != 0 ? 255 : 0;
 
 			SDL_SetRenderDrawColor(renderer, tileColorR, tileColorG, tileColorB, 255);
 			SDL_Rect mapTileRect = {
@@ -427,6 +427,31 @@ void RenderRays()
 			MINIMAP_SCALE_FACTOR * rays[i].wallHitY
 		);
 	}
+}
+
+void RenderWallProjection()
+{
+	for (int i = 0; i < NUM_RAYS; i++)
+	{
+		float perpendicularDistance = rays[i].distance * cos(rays[i].rayAngle - player.rotationAngle);
+		float distanceToProjectionPlane = (WINDOW_WIDTH * 0.5) / tan(FOV_ANGLE * 0.5);
+		float projectedWallHeight = (TILE_SIZE / perpendicularDistance) * distanceToProjectionPlane;
+
+		int wallStripHeight = (int)projectedWallHeight;
+
+		int wallTopPixel = (WINDOW_HEIGHT * 0.5) - (wallStripHeight * 0.5);
+		wallTopPixel = wallTopPixel < 0 ? 0 : wallTopPixel; // clamp top pixel to top of the screen
+
+		int wallBottomPixel = (WINDOW_HEIGHT * 0.5) + (wallStripHeight * 0.5);
+		wallBottomPixel = wallBottomPixel > WINDOW_HEIGHT ? WINDOW_HEIGHT : wallBottomPixel;
+
+		// render the wall from top to bottom
+		for (int y = wallTopPixel; y < wallBottomPixel; y++)
+		{
+			colorBuffer[(WINDOW_WIDTH * y) + i] = rays[i].bIsVerticalHit ?  0xFFB7C1DE : 0xFFA7B1CE;
+		}
+	}
+
 }
 
 void ClearColorBuffer(Uint32 color)
@@ -511,9 +536,11 @@ void Render()
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // set color
 	SDL_RenderClear(renderer); // clear buffer
+
+	RenderWallProjection();
 	
 	RenderColorBuffer();
-	ClearColorBuffer(0xFF00FFCC);
+	ClearColorBuffer(0xFF092047);
 
 	// Display Minimap
 	RenderMap();
