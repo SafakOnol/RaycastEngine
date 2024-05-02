@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <limits.h>
 
 #include <SDL2/SDL.h>
@@ -60,10 +61,10 @@ int bIsGameRunning = FALSE;
 int ticks = 0;
 float deltaTime = 0;
 
-Uint32* colorBuffer = NULL;
+uint32_t* colorBuffer = NULL;
 SDL_Texture* colorBufferTexture;
-Uint32* wallTexture = NULL;
-Uint32* textures[NUM_TEXTURES];
+uint32_t* wallTexture = NULL;
+uint32_t* textures[NUM_TEXTURES];
 
 // --- SDL FUNCTIONS --- //
 
@@ -162,7 +163,7 @@ void GameSetup()
 	player.walkSpeed = 100;
 
 	// allocate memory for color buffer
-	colorBuffer = (Uint32*) malloc(sizeof(Uint32) * (Uint32)WINDOW_WIDTH * (Uint32)WINDOW_HEIGHT); // size of Uint32 * w & h in Uint32
+	colorBuffer = (uint32_t*) malloc(sizeof(uint32_t) * (uint32_t)WINDOW_WIDTH * (uint32_t)WINDOW_HEIGHT); // size of uint32_t * w & h in uint32_t
 
 	colorBufferTexture = SDL_CreateTexture
 	(
@@ -174,7 +175,7 @@ void GameSetup()
 	);
 
 	// create texture with a blue-black square pattern
-	/*wallTexture = (Uint32*) malloc(sizeof(Uint32) * (Uint32)TEXTURE_WIDTH * (Uint32)TEXTURE_HEIGHT);
+	/*wallTexture = (uint32_t*) malloc(sizeof(uint32_t) * (uint32_t)TEXTURE_WIDTH * (uint32_t)TEXTURE_HEIGHT);
 	for (int x = 0; x < TEXTURE_WIDTH; x++)
 	{
 		for (int y = 0; y < TEXTURE_HEIGHT; y++)
@@ -184,14 +185,14 @@ void GameSetup()
 	}*/
 
 	// Load Textures from Texture.h
-	textures[0] = (Uint32*) REDBRICK_TEXTURE;
-	textures[1] = (Uint32*) PURPLESTONE_TEXTURE;
-	textures[2] = (Uint32*) MOSSYSTONE_TEXTURE;
-	textures[3] = (Uint32*) GRAYSTONE_TEXTURE;
-	textures[4] = (Uint32*) COLORSTONE_TEXTURE;
-	textures[5] = (Uint32*) BLUESTONE_TEXTURE;
-	textures[6] = (Uint32*) WOOD_TEXTURE;
-	textures[7] = (Uint32*) EAGLE_TEXTURE;
+	textures[0] = (uint32_t*) REDBRICK_TEXTURE;
+	textures[1] = (uint32_t*) PURPLESTONE_TEXTURE;
+	textures[2] = (uint32_t*) MOSSYSTONE_TEXTURE;
+	textures[3] = (uint32_t*) GRAYSTONE_TEXTURE;
+	textures[4] = (uint32_t*) COLORSTONE_TEXTURE;
+	textures[5] = (uint32_t*) BLUESTONE_TEXTURE;
+	textures[6] = (uint32_t*) WOOD_TEXTURE;
+	textures[7] = (uint32_t*) EAGLE_TEXTURE;
 }
 
 int CheckCollision(float x, float y)
@@ -498,8 +499,8 @@ void RenderWallProjection()
 			int textureArrayIndex = rays[i].wallHitContent - 1; // 0 is used for empty space, therefore map content and texture array has 1 difference
 
 			// map texture data to wall color
-			//Uint32 texelColor = wallTexture[(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
-			Uint32 texelColor = textures[textureArrayIndex][(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
+			//uint32_t texelColor = wallTexture[(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
+			uint32_t texelColor = textures[textureArrayIndex][(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
 			colorBuffer[(WINDOW_WIDTH * y) + i] = texelColor;
 
 			// if no texture, fall back to default colors
@@ -515,7 +516,7 @@ void RenderWallProjection()
 
 }
 
-void ClearColorBuffer(Uint32 color)
+void ClearColorBuffer(uint32_t color)
 {
 	for (int x = 0; x < WINDOW_WIDTH; x++)
 	{
@@ -533,7 +534,7 @@ void RenderColorBuffer()
 		colorBufferTexture,
 		NULL,
 		colorBuffer,
-		(int)(Uint32)WINDOW_WIDTH * sizeof(Uint32)
+		(int)(uint32_t)WINDOW_WIDTH * sizeof(uint32_t)
 	);
 
 	SDL_RenderCopy(renderer, colorBufferTexture, NULL, NULL);
