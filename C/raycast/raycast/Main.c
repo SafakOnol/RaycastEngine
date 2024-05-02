@@ -63,6 +63,9 @@ Uint32* colorBuffer = NULL;
 
 SDL_Texture* colorBufferTexture;
 
+Uint32* wallTexture = NULL;
+
+
 // --- SDL FUNCTIONS --- //
 
 int InitializeWindow()
@@ -103,6 +106,8 @@ void DestroyWindow()
 {
 	free(colorBuffer);
 	SDL_DestroyTexture(colorBufferTexture);
+
+	//free(wallTexture); ???
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
@@ -158,7 +163,7 @@ void GameSetup()
 	player.walkSpeed = 100;
 
 	// allocate memory for color buffer
-	colorBuffer = (Uint32*) malloc(sizeof(Uint32) * (Uint32)WINDOW_WIDTH * (Uint32)WINDOW_HEIGHT);
+	colorBuffer = (Uint32*) malloc(sizeof(Uint32) * (Uint32)WINDOW_WIDTH * (Uint32)WINDOW_HEIGHT); // size of Uint32 * w & h in Uint32
 
 	colorBufferTexture = SDL_CreateTexture
 	(
@@ -168,6 +173,17 @@ void GameSetup()
 		WINDOW_WIDTH,
 		WINDOW_HEIGHT
 	);
+
+	// create texture with a blue-black square pattern
+	wallTexture = (Uint32*) malloc(sizeof(Uint32) * (Uint32)TEXTURE_WIDTH * (Uint32)TEXTURE_HEIGHT);
+	for (int x = 0; x < TEXTURE_WIDTH; x++)
+	{
+		for (int y = 0; y < TEXTURE_HEIGHT; y++)
+		{
+			wallTexture[(TEXTURE_WIDTH * y) + x] = (x % 8 && y % 8) ? 0xFF0000FF : 0xFF000000;
+		}
+	}
+		
 }
 
 int CheckCollision(float x, float y)
@@ -433,10 +449,12 @@ void RenderWallProjection()
 {
 	for (int i = 0; i < NUM_RAYS; i++)
 	{
+		// ray math
 		float perpendicularDistance = rays[i].distance * cos(rays[i].rayAngle - player.rotationAngle);
 		float distanceToProjectionPlane = (WINDOW_WIDTH * 0.5) / tan(FOV_ANGLE * 0.5);
 		float projectedWallHeight = (TILE_SIZE / perpendicularDistance) * distanceToProjectionPlane;
 
+		// calculate Wall Dimentions to draw
 		int wallStripHeight = (int)projectedWallHeight;
 
 		int wallTopPixel = (WINDOW_HEIGHT * 0.5) - (wallStripHeight * 0.5);
@@ -451,10 +469,30 @@ void RenderWallProjection()
 			colorBuffer[(WINDOW_WIDTH * c) + i] = 0xFF092047;
 		}
 
+		// calculate textureOffsetX
+		// TODO: add link to math drawing
+		int textureOffsetX;
+		if (rays[i].bIsVerticalHit)
+		{
+			textureOffsetX = (int)rays[i].wallHitY % TILE_SIZE;
+		}
+		else
+		{
+			textureOffsetX = (int)rays[i].wallHitX % TILE_SIZE;
+		}
+
 		// render the wall from top to bottom
 		for (int y = wallTopPixel; y < wallBottomPixel; y++)
 		{
-			colorBuffer[(WINDOW_WIDTH * y) + i] = rays[i].bIsVerticalHit ?  0xFFB7C1DE : 0xFFA7B1CE;	
+			int distanceToWallTop = y + (wallStripHeight * 0.5) - (WINDOW_HEIGHT * 0.5);
+			int textureOffsetY = distanceToWallTop * ((float)TEXTURE_HEIGHT / wallStripHeight); // set first offset pixel to the first pixel of the wall
+			
+			// map texture data to wall color
+			Uint32 texelColor = wallTexture[(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
+			colorBuffer[(WINDOW_WIDTH * y) + i] = texelColor;
+
+			// if no texture, fall back to default colors
+			// colorBuffer[(WINDOW_WIDTH * y) + i] = rays[i].bIsVerticalHit ?  0xFFB7C1DE : 0xFFA7B1CE;	
 		}
 		
 		// render floor
@@ -555,9 +593,9 @@ void Render()
 	ClearColorBuffer(0xFF000000);
 
 	// Display Minimap
-	RenderMap();
-	RenderRays();
-	RenderPlayer();
+	//RenderMap();
+	//RenderRays();
+	//RenderPlayer();
 
 
 	SDL_RenderPresent(renderer); // swap buffer
