@@ -4,24 +4,25 @@
 #include <SDL2/SDL.h>
 
 #include "Constants.h"
+#include "Texture.h"
 
 
 // MAP
 const int map[MAP_NUM_ROWS][MAP_NUM_COLS] = 
 {
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1, 1, 1, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+	{1, 1, 1, 8, 1, 1, 8, 1, 1, 8, 1, 1, 8 ,1, 1, 1, 1, 1, 1, 1},
+	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 5, 1},
+	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 5, 1},
+	{4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 5, 1},
+	{4, 0, 4, 0, 2, 2, 2, 2, 0, 6, 6, 6, 6, 6, 0, 1, 5, 0, 5, 1},
+	{4, 0, 4, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 5, 1},
+	{4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+	{4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1},
+	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 1, 7, 7, 7, 7, 7},
+	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 1, 7, 0, 0, 0, 7},
+	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 1, 7, 0, 0, 0, 7},
+	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 0, 0, 0, 0, 0, 7},
+	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7}
 };
 
 // --- WRAPPERS --- //
@@ -60,11 +61,9 @@ int ticks = 0;
 float deltaTime = 0;
 
 Uint32* colorBuffer = NULL;
-
 SDL_Texture* colorBufferTexture;
-
 Uint32* wallTexture = NULL;
-
+Uint32* textures[NUM_TEXTURES];
 
 // --- SDL FUNCTIONS --- //
 
@@ -158,7 +157,7 @@ void GameSetup()
 	player.h = 1;
 	player.turnDirection = 0;
 	player.walkDirection = 0;
-	player.rotationAngle = PI * 1.5;
+	player.rotationAngle = PI * 0.5;
 	player.turnSpeed = 135 * (PI / 180);
 	player.walkSpeed = 100;
 
@@ -175,15 +174,24 @@ void GameSetup()
 	);
 
 	// create texture with a blue-black square pattern
-	wallTexture = (Uint32*) malloc(sizeof(Uint32) * (Uint32)TEXTURE_WIDTH * (Uint32)TEXTURE_HEIGHT);
+	/*wallTexture = (Uint32*) malloc(sizeof(Uint32) * (Uint32)TEXTURE_WIDTH * (Uint32)TEXTURE_HEIGHT);
 	for (int x = 0; x < TEXTURE_WIDTH; x++)
 	{
 		for (int y = 0; y < TEXTURE_HEIGHT; y++)
 		{
 			wallTexture[(TEXTURE_WIDTH * y) + x] = (x % 8 && y % 8) ? 0xFF0000FF : 0xFF000000;
 		}
-	}
-		
+	}*/
+
+	// Load Textures from Texture.h
+	textures[0] = (Uint32*) REDBRICK_TEXTURE;
+	textures[1] = (Uint32*) PURPLESTONE_TEXTURE;
+	textures[2] = (Uint32*) MOSSYSTONE_TEXTURE;
+	textures[3] = (Uint32*) GRAYSTONE_TEXTURE;
+	textures[4] = (Uint32*) COLORSTONE_TEXTURE;
+	textures[5] = (Uint32*) BLUESTONE_TEXTURE;
+	textures[6] = (Uint32*) WOOD_TEXTURE;
+	textures[7] = (Uint32*) EAGLE_TEXTURE;
 }
 
 int CheckCollision(float x, float y)
@@ -466,7 +474,7 @@ void RenderWallProjection()
 		// render ceiling
 		for (int c = 0; c < wallTopPixel; c++)
 		{
-			colorBuffer[(WINDOW_WIDTH * c) + i] = 0xFF092047;
+			colorBuffer[(WINDOW_WIDTH * c) + i] = 0x403C3C;
 		}
 
 		// calculate textureOffsetX
@@ -487,8 +495,11 @@ void RenderWallProjection()
 			int distanceToWallTop = y + (wallStripHeight * 0.5) - (WINDOW_HEIGHT * 0.5);
 			int textureOffsetY = distanceToWallTop * ((float)TEXTURE_HEIGHT / wallStripHeight); // set first offset pixel to the first pixel of the wall
 			
+			int textureArrayIndex = rays[i].wallHitContent - 1; // 0 is used for empty space, therefore map content and texture array has 1 difference
+
 			// map texture data to wall color
-			Uint32 texelColor = wallTexture[(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
+			//Uint32 texelColor = wallTexture[(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
+			Uint32 texelColor = textures[textureArrayIndex][(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
 			colorBuffer[(WINDOW_WIDTH * y) + i] = texelColor;
 
 			// if no texture, fall back to default colors
@@ -498,7 +509,7 @@ void RenderWallProjection()
 		// render floor
 		for (int f = wallBottomPixel; f < WINDOW_HEIGHT; f++)
 		{
-			colorBuffer[(WINDOW_WIDTH * f) + i] = 0xFF0B468C;
+			colorBuffer[(WINDOW_WIDTH * f) + i] = 0x706C6C;
 		}
 	}
 
