@@ -63,7 +63,7 @@ float deltaTime = 0;
 
 uint32_t* colorBuffer = NULL;
 SDL_Texture* colorBufferTexture;
-uint32_t* wallTexture = NULL;
+//uint32_t* wallTexture = NULL;
 uint32_t* textures[NUM_TEXTURES];
 
 // --- SDL FUNCTIONS --- //
@@ -587,7 +587,7 @@ void HandleInput()
 
 void Update()
 {
-	// Start with this
+	// Start with compute delta time
 	ComputeDeltaTime();
 
 	MovePlayer(deltaTime);
@@ -605,9 +605,9 @@ void Render()
 	ClearColorBuffer(0xFF000000);
 
 	// Display Minimap
-	//RenderMap();
-	//RenderRays();
-	//RenderPlayer();
+	/*RenderMap();
+	RenderRays();
+	RenderPlayer();*/
 
 
 	SDL_RenderPresent(renderer); // swap buffer
