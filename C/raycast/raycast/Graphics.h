@@ -12,5 +12,6 @@ void DestroyWindow(void);
 void ClearColorBuffer(uint32_t color);
 void RenderColorBuffer(void);
 void DrawPixel(int x, int y, uint32_t color);
+void DrawRect(int x, int y, int width, int height, uint32_t color);
 
 #endif

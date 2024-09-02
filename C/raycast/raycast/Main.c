@@ -486,6 +486,8 @@ void Render()
 
 	RenderWallProjection();
 
+	// Test Rectangle
+	//DrawRect(100, 100, 100, 100, 0xFFFFFFFF);
 	// Display Minimap
 	//RenderMap();
 	//RenderRays();

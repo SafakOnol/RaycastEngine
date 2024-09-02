@@ -98,3 +98,15 @@ void DrawPixel(int x, int y, uint32_t color)
 	colorBuffer[(RESOLUTION_WINDOW_WIDTH * y) + x] = color;
 }
 
+void DrawRect(int x, int y, int width, int height, uint32_t color)
+{
+	for (int i = x; i < x + width + 1; i++)
+	{
+		for (int j = y; j < y + height + 1; j++)
+		{
+			DrawPixel(i, j, color);
+		}
+
+	}
+}
+
