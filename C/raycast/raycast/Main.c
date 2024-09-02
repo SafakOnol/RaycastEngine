@@ -388,13 +388,10 @@ void CastRay(float rayAngle, int stripID)
 
 void CastAllRays()
 {
-	// start first ray subtracting half of our FOV
-	float rayAngle = player.rotationAngle - (FOV_ANGLE * 0.5);
-
-	for (int stripID = 0; stripID < NUM_RAYS; stripID++)
+	for (int col = 0; col < NUM_RAYS; col++)
 	{
-		CastRay(rayAngle, stripID);
-		rayAngle += FOV_ANGLE / NUM_RAYS;
+		float rayAngle = player.rotationAngle + atan((col - NUM_RAYS * 0.5) / DISTANCE_TO_PROJECTION_PLANE);
+		CastRay(rayAngle, col);
 	}
 }
 
@@ -432,7 +429,7 @@ void RenderMap()
 
 void RenderRays()
 {
-	SDL_SetRenderDrawColor(renderer, 255, 0, 160, 100);
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
 	for (int i = 0; i < NUM_RAYS; i++)
 	{
 		SDL_RenderDrawLine
@@ -452,8 +449,8 @@ void RenderWallProjection()
 	{
 		// ray math
 		float perpendicularDistance = rays[i].distance * (float)cos(rays[i].rayAngle - player.rotationAngle);
-		float distanceToProjectionPlane = (WINDOW_WIDTH * 0.5) / (float)tan(FOV_ANGLE * 0.5);
-		float projectedWallHeight = (TILE_SIZE / perpendicularDistance) * distanceToProjectionPlane;
+
+		float projectedWallHeight = (TILE_SIZE / perpendicularDistance) * DISTANCE_TO_PROJECTION_PLANE;
 
 		// calculate Wall Dimentions to draw
 		int wallStripHeight = (int)projectedWallHeight;
@@ -484,13 +481,16 @@ void RenderWallProjection()
 
 		int textureArrayIndex = rays[i].wallHitContent - 1; // 0 is used for empty space, therefore map content and texture array has 1 difference
 
+		int texture_width	= WallTextures[textureArrayIndex].width;
+		int texture_height	= WallTextures[textureArrayIndex].height;
+
 		// render the wall from top to bottom
 		for (int y = wallTopPixel; y < wallBottomPixel; y++)
 		{
 			int distanceToWallTop = y + (wallStripHeight * 0.5) - (WINDOW_HEIGHT * 0.5);
-			int textureOffsetY = distanceToWallTop * ((float)TEXTURE_HEIGHT / wallStripHeight); // set first offset pixel to the first pixel of the wall
+			int textureOffsetY = distanceToWallTop * ((float)texture_height / wallStripHeight); // set first offset pixel to the first pixel of the wall
 			
-			uint32_t texelColor = WallTextures[textureArrayIndex].texture_buffer[(TEXTURE_WIDTH * textureOffsetY) + textureOffsetX];
+			uint32_t texelColor = WallTextures[textureArrayIndex].texture_buffer[(texture_width * textureOffsetY) + textureOffsetX];
 			colorBuffer[(WINDOW_WIDTH * y) + i] = texelColor;
 
 			// if no texture, fall back to default colors
