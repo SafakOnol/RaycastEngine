@@ -143,12 +143,14 @@
   <ItemGroup>
     <ClCompile Include="Graphics.c" />
     <ClCompile Include="Main.c" />
+    <ClCompile Include="Map.c" />
     <ClCompile Include="Textures.c" />
     <ClCompile Include="upng.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="TextureVerts.h" />
     <ClInclude Include="upng.h" />

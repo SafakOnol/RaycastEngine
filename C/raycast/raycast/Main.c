@@ -9,25 +9,7 @@
 #include "Definitions.h"
 #include "Textures.h"
 #include "Graphics.h"
-
-
-// MAP
-const int map[MAP_NUM_ROWS][MAP_NUM_COLS] = 
-{
-	{1, 1, 1, 8, 1, 1, 8, 1, 1, 8, 1, 1, 8 ,1, 1, 1, 1, 1, 1, 1},
-	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 5, 5, 1},
-	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 5, 1},
-	{4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 5, 1},
-	{4, 0, 4, 0, 2, 2, 2, 2, 0, 6, 6, 6, 6, 6, 0, 1, 5, 0, 5, 1},
-	{4, 0, 4, 0, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 1, 5, 0, 5, 1},
-	{4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-	{4, 0, 4, 0, 0, 0, 0, 0, 9, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1},
-	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 1, 7, 7, 7, 7, 7},
-	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 1, 7, 0, 0, 0, 7},
-	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 1, 7, 0, 0, 0, 7},
-	{4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 0, 0, 0, 0, 0, 0, 7},
-	{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 7, 7}
-};
+#include "Map.h"
 
 // --- WRAPPERS --- //
 
@@ -113,22 +95,6 @@ void GameSetup()
 	LoadWallTextures();
 }
 
-bool CheckCollision(float x, float y)
-{
-	if (x < 0 || x >= MAP_NUM_COLS * TILE_SIZE || y < 0 || y >= MAP_NUM_ROWS * TILE_SIZE)
-	{
-		//printf("Player position out of bounds: (%f, %f)\n", x, y);
-		return true; // return collision
-	}
-
-	int mapGridIndexX = (int)floor(x / TILE_SIZE);
-	int mapGridIndexY = (int)floor(y / TILE_SIZE);
-
-	//printf("Player position: (%f, %f), Map Grid Index: (%d, %d)\n", x, y, mapGridIndexX, mapGridIndexY);
-
-	return map[mapGridIndexY][mapGridIndexX] != 0; // x and y, columns and rows inverted
-}
-
 void MovePlayer(float deltaTime)
 {
 	player.rotationAngle += player.turnDirection * (player.turnSpeed * deltaTime);
@@ -138,7 +104,7 @@ void MovePlayer(float deltaTime)
 	float newX = player.x + cos(player.rotationAngle) * moveStep;
 	float newY = player.y + sin(player.rotationAngle) * moveStep;
 
-	if (!CheckCollision(newX, newY))
+	if (!CheckWallCollision(newX, newY))
 	{
 		player.x = newX;
 		player.y = newY;
@@ -208,17 +174,17 @@ void CastRay(float rayAngle, int stripID)
 	float nextHorizontalLineY = yIntercept;
 
 	// Increment steps until hitting a wall
-	while (nextHorizontalLineX >= 0 && nextHorizontalLineX <= MAP_NUM_COLS * TILE_SIZE && nextHorizontalLineY >= 0 && nextHorizontalLineY <= MAP_NUM_ROWS * TILE_SIZE)
+	while (CheckMapBoundary(nextHorizontalLineX, nextHorizontalLineY))
 	{
 		float xTemp = nextHorizontalLineX;
 		float yTemp = nextHorizontalLineY + (bIsRayFacingUp ? -1 : 0);
 
-		if (CheckCollision(xTemp, yTemp))
+		if (CheckWallCollision(xTemp, yTemp))
 		{
 			// ray hit a wall!
 			horizontalWallHitX = nextHorizontalLineX;
 			horizontalWallHitY = nextHorizontalLineY;
-			horizontalWallContent = map[(int)floor(yTemp / TILE_SIZE)][(int)floor(xTemp / TILE_SIZE)];
+			horizontalWallContent = GetMapAt((int)floor(yTemp / TILE_SIZE),(int)floor(xTemp / TILE_SIZE));
 			bIsAHorizontalWallHit = true;
 			break;
 		}
@@ -257,17 +223,17 @@ void CastRay(float rayAngle, int stripID)
 	float nextVerticalLineY = yIntercept;
 
 	// Increment steps until hitting a wall
-	while (nextVerticalLineX >= 0 && nextVerticalLineX <= MAP_NUM_COLS * TILE_SIZE && nextVerticalLineY >= 0 && nextVerticalLineY <= MAP_NUM_ROWS * TILE_SIZE)
+	while (CheckMapBoundary(nextVerticalLineX, nextVerticalLineY))
 	{
 		float xTemp = nextVerticalLineX + (bIsRayFacingLeft ? -1 : 0);
 		float yTemp = nextVerticalLineY;
 
-		if (CheckCollision(xTemp, yTemp))
+		if (CheckWallCollision(xTemp, yTemp))
 		{
 			// ray hit a wall!
 			verticalWallHitX = nextVerticalLineX;
 			verticalWallHitY = nextVerticalLineY;
-			verticalWallContent = map[(int)floor(yTemp / TILE_SIZE)][(int)floor(xTemp / TILE_SIZE)];
+			verticalWallContent = GetMapAt((int)floor(yTemp / TILE_SIZE),(int)floor(xTemp / TILE_SIZE));
 			bIsAVerticalWallHit = true;
 			break;
 		}
@@ -327,29 +293,7 @@ void CastAllRays()
 /// #092047 
 /// </Color Palet>
 
-void RenderMap()
-{
-	/*for (int i = 0; i < MAP_NUM_ROWS; i++)
-	{
-		for (int j = 0; j < MAP_NUM_COLS; j++)
-		{
-			int tileX = j * TILE_SIZE;
-			int tileY = i * TILE_SIZE;
-			int tileColorR = map[i][j] != 0 ? 255 : 0;
-			int tileColorG = map[i][j] != 0 ? 255 : 0;
-			int tileColorB = map[i][j] != 0 ? 255 : 0;
 
-			SDL_SetRenderDrawColor(renderer, tileColorR, tileColorG, tileColorB, 255);
-			SDL_Rect mapTileRect = {
-				tileX * MINIMAP_SCALE_FACTOR,
-				tileY * MINIMAP_SCALE_FACTOR,
-				TILE_SIZE * MINIMAP_SCALE_FACTOR,
-				TILE_SIZE * MINIMAP_SCALE_FACTOR
-			};
-			SDL_RenderFillRect(renderer, &mapTileRect);
-		}
-	}*/
-}
 
 void RenderRays()
 {
@@ -489,7 +433,7 @@ void Render()
 	// Test Rectangle
 	//DrawRect(100, 100, 100, 100, 0xFFFFFFFF);
 	// Display Minimap
-	//RenderMap();
+	RenderMap();
 	//RenderRays();
 	//RenderPlayer();
 
