@@ -2,7 +2,7 @@
 #define TEXTURES_H
 
 #include <stdint.h>
-#include "Constants.h"
+#include "Definitions.h"
 #include "upng.h"
 
 typedef struct {

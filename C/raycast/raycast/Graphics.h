@@ -1,0 +1,16 @@
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <SDL2/SDL.h>
+
+#include "Definitions.h"
+
+bool InitializeWindow(void);
+void DestroyWindow(void);
+void ClearColorBuffer(uint32_t color);
+void RenderColorBuffer(void);
+void DrawPixel(int x, int y, uint32_t color);
+
+#endif

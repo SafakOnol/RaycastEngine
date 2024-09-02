@@ -141,12 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Graphics.c" />
     <ClCompile Include="Main.c" />
     <ClCompile Include="Textures.c" />
     <ClCompile Include="upng.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Definitions.h" />
+    <ClInclude Include="Graphics.h" />
     <ClInclude Include="Textures.h" />
     <ClInclude Include="TextureVerts.h" />
     <ClInclude Include="upng.h" />
