@@ -1,4 +1,4 @@
-#include "Textures.h"
+#include "Texture.h"
 #include <stdio.h>
 
 static const char* textureFileNames[NUM_TEXTURES] = 

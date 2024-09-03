@@ -146,8 +146,9 @@
     <ClCompile Include="Map.c" />
     <ClCompile Include="Player.c" />
     <ClCompile Include="Ray.c" />
-    <ClCompile Include="Textures.c" />
+    <ClCompile Include="Texture.c" />
     <ClCompile Include="upng.c" />
+    <ClCompile Include="Wall.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Definitions.h" />
@@ -155,9 +156,10 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Ray.h" />
-    <ClInclude Include="Textures.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureVerts.h" />
     <ClInclude Include="upng.h" />
+    <ClInclude Include="Wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
