@@ -121,6 +121,13 @@ void RenderWallProjection()
 
 }
 
+void RenderMiniMap(void)
+{
+	RenderMap();
+	RenderRays();
+	RenderPlayer();
+}
+
 // --- GAME LOOP FUNCTIONS --- //
 
 void HandleInput()
@@ -181,11 +188,12 @@ void Render()
 
 	// Test Rectangle
 	//DrawRect(100, 100, 100, 100, 0xFFFFFFFF);
+
+	// Test Line
+	//DrawLine(300, 200, 200, 700, 0xFFFFFFFF);
 	
-	// Display Minimap
-	RenderMap();
-	//RenderRays();
-	RenderPlayer();
+	RenderMiniMap();
+	
 
 	RenderColorBuffer();
 }
