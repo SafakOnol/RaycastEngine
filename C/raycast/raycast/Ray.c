@@ -172,17 +172,16 @@ void CastAllRays(void)
 
 void RenderRays()
 {
-	/*SDL_SetRenderDrawColor(renderer, 255, 0, 0, 100);
-	for (int i = 0; i < NUM_RAYS; i++)
+	for (int i = 0; i < NUM_RAYS; i += 25)
 	{
-		SDL_RenderDrawLine
+		DrawLine
 		(
-			renderer,
-			MINIMAP_SCALE_FACTOR * player.x,
-			MINIMAP_SCALE_FACTOR * player.y,
-			MINIMAP_SCALE_FACTOR * rays[i].wallHitX,
-			MINIMAP_SCALE_FACTOR * rays[i].wallHitY
+			player.x * MINIMAP_SCALE_FACTOR,
+			player.y * MINIMAP_SCALE_FACTOR,
+			rays[i].wallHitX * MINIMAP_SCALE_FACTOR,
+			rays[i].wallHitY * MINIMAP_SCALE_FACTOR,
+			0xFF0000FF
 		);
-	}*/
+	}
 };
 

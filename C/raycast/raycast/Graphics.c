@@ -110,3 +110,29 @@ void DrawRect(int x, int y, int width, int height, uint32_t color)
 	}
 }
 
+void DrawLine(int x0, int y0, int x1, int y1, uint32_t color) // DDA algorithm
+{
+	// find rise(delta_y) and run(delta_x) values
+	int deltaX = (x1 - x0);
+	int deltaY = (y1 - y0);
+
+	// get absolute value of the rise and run, compare the sizes and chose the longer one as side length (base to calculate increment values)
+	int baseLength = abs(deltaX) >= abs(deltaY) ? abs(deltaX) : abs(deltaY);
+
+	// calculate increment values (cast one of the values to float in order to get a floating point as a result of the division
+	float xIncrement = deltaX / (float)baseLength;
+	float yIncrement = deltaY / (float)baseLength;
+
+	// setup starting values
+	float currentX = x0;
+	float currentY = y0;
+
+	// calculate and draw pixels along the line step by step
+	for (int i = 0; i < baseLength; i++)
+	{
+		DrawPixel(round(currentX), round(currentY), color);
+		currentX += xIncrement;
+		currentY += yIncrement;
+	}
+};
+
