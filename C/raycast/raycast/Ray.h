@@ -20,7 +20,7 @@ typedef struct
 extern ray_t rays[NUM_RAYS];	// Decleration of the array in the type of ray_t
 								// This variable is initialized in another file (therefore extern)
 
-float NormalizeAngle(float angle);
+void NormalizeAngle(float* angle);
 float DistanceBetweenPoints(float x1, float y1, float x2, float y2);
 void CastRay(float rayAngle, int stripID);
 void CastAllRays(void);
