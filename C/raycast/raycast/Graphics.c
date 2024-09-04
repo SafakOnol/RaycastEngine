@@ -5,7 +5,7 @@ static SDL_Renderer* renderer = NULL;
 static color_t* colorBuffer = NULL;
 static SDL_Texture* colorBufferTexture;
 
-wallColorFadeFactor = 2.0f;
+wallColorFadeFactor = 0.8f;
 
 bool InitializeWindow(void)
 {

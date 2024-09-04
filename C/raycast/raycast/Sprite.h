@@ -1,6 +1,11 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
+#include "Definitions.h"
+#include "Graphics.h"
+#include "Player.h"
+#include "Texture.h"
+
 typedef struct
 {
 	float x;

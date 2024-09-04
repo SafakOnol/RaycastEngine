@@ -7,8 +7,8 @@
 #include "Definitions.h"
 #include "Graphics.h"
 
-#define MAP_NUM_ROWS 13
-#define MAP_NUM_COLS 20
+#define MAP_NUM_ROWS 24
+#define MAP_NUM_COLS 24
 
 bool CheckWallCollision(float x, float y);
 bool CheckMapBoundary(float x, float y);
