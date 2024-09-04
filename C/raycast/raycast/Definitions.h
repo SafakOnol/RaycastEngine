@@ -23,6 +23,8 @@
 #define FPS 60
 #define FRAME_TIME_LENGTH (1000 / FPS)
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 ///////////////////////////
 /// RESOLUTION SETTINGS ///
 ///////////////////////////

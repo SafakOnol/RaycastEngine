@@ -5,6 +5,8 @@ static SDL_Renderer* renderer = NULL;
 static color_t* colorBuffer = NULL;
 static SDL_Texture* colorBufferTexture;
 
+wallColorFadeFactor = 2.0f;
+
 bool InitializeWindow(void)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -91,6 +93,16 @@ void RenderColorBuffer(void)
 	SDL_RenderCopy(renderer, colorBufferTexture, NULL, NULL);
 
 	SDL_RenderPresent(renderer); // swap buffer
+}
+
+void AdjustColorIntensity(color_t* color, float factor)
+{
+	color_t A = (*color & 0xFF000000);
+	color_t R = (*color & 0x00FF0000) * factor;
+	color_t G = (*color & 0x0000FF00) * factor;
+	color_t B = (*color & 0x000000FF) * factor;
+	
+	*color = A | (R & 0x00FF0000) | (G & 0x0000FF00) | (B & 0x000000FF);
 }
 
 void DrawPixel(int x, int y, color_t color)
