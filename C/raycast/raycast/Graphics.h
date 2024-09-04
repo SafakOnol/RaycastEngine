@@ -7,12 +7,16 @@
 
 #include "Definitions.h"
 
+float wallColorFadeFactor;
+
 bool InitializeWindow(void);
 void DestroyWindow(void);
-void ClearColorBuffer(uint32_t color);
+void ClearColorBuffer(color_t color);
 void RenderColorBuffer(void);
-void DrawPixel(int x, int y, uint32_t color);
-void DrawRect(int x, int y, int width, int height, uint32_t color);
-void DrawLine(int x1, int y1, int x2, int y2, uint32_t color);
+void AdjustColorIntensity(color_t* color, float factor);
+void DrawPixel(int x, int y, color_t color);
+void DrawRect(int x, int y, int width, int height, color_t color);
+void DrawLine(int x1, int y1, int x2, int y2, color_t color);
+
 
 #endif

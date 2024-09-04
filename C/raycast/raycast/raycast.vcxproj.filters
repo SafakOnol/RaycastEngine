@@ -18,9 +18,6 @@
     <ClCompile Include="Main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Textures.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="upng.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,11 +33,14 @@
     <ClCompile Include="Player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Wall.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Textures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextureVerts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -60,6 +60,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Wall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

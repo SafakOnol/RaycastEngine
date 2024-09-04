@@ -1,4 +1,4 @@
-#include "Textures.h"
+#include "Texture.h"
 #include <stdio.h>
 
 static const char* textureFileNames[NUM_TEXTURES] = 
@@ -27,7 +27,7 @@ void LoadWallTextures() {
 				WallTextures[i].upngTexture = upng;
 				WallTextures[i].width = upng_get_width(upng);
 				WallTextures[i].height = upng_get_height(upng);
-				WallTextures[i].texture_buffer = (uint32_t*)upng_get_buffer(upng);
+				WallTextures[i].texture_buffer = (color_t*)upng_get_buffer(upng);
 			}
 		}
 	}

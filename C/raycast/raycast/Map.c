@@ -54,7 +54,7 @@ void RenderMap(void)
 			int tileColorG = map[i][j] != 0 ? 255 : 0;
 			int tileColorB = map[i][j] != 0 ? 255 : 0;
 			uint32_t tileColor = (255 << 24) | (tileColorR << 16) | (tileColorG << 8) | tileColorB;*/
-			uint32_t tileColor = map[i][j] != 0 ? 0xFFFFFFFF : 0x00000000;
+			color_t tileColor = map[i][j] != 0 ? 0xFFFFFFFF : 0x00000000;
 
 			DrawRect
 			(

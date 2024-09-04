@@ -2,8 +2,10 @@
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
-static uint32_t* colorBuffer = NULL;
+static color_t* colorBuffer = NULL;
 static SDL_Texture* colorBufferTexture;
+
+wallColorFadeFactor = 2.0f;
 
 bool InitializeWindow(void)
 {
@@ -43,7 +45,7 @@ bool InitializeWindow(void)
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	// allocate memory for color buffer
-	colorBuffer = (uint32_t*)malloc(sizeof(uint32_t) * (uint32_t)RESOLUTION_WINDOW_WIDTH * (uint32_t)RESOLUTION_WINDOW_HEIGHT); // size of uint32_t * w & h in uint32_t
+	colorBuffer = (color_t*)malloc(sizeof(color_t) * (color_t)RESOLUTION_WINDOW_WIDTH * (color_t)RESOLUTION_WINDOW_HEIGHT); // size of uint32_t * w & h in uint32_t
 
 	colorBufferTexture = SDL_CreateTexture
 	(
@@ -69,7 +71,7 @@ void DestroyWindow(void)
 }
 
 
-void ClearColorBuffer(uint32_t color)
+void ClearColorBuffer(color_t color)
 {
 	for (int i = 0; i < RESOLUTION_WINDOW_WIDTH * RESOLUTION_WINDOW_HEIGHT; i++)
 	{
@@ -85,7 +87,7 @@ void RenderColorBuffer(void)
 		colorBufferTexture,
 		NULL,
 		colorBuffer,
-		(int)((uint32_t)RESOLUTION_WINDOW_WIDTH * sizeof(uint32_t))
+		(int)((color_t)RESOLUTION_WINDOW_WIDTH * sizeof(color_t))
 	);
 
 	SDL_RenderCopy(renderer, colorBufferTexture, NULL, NULL);
@@ -93,12 +95,22 @@ void RenderColorBuffer(void)
 	SDL_RenderPresent(renderer); // swap buffer
 }
 
-void DrawPixel(int x, int y, uint32_t color)
+void AdjustColorIntensity(color_t* color, float factor)
+{
+	color_t A = (*color & 0xFF000000);
+	color_t R = (*color & 0x00FF0000) * factor;
+	color_t G = (*color & 0x0000FF00) * factor;
+	color_t B = (*color & 0x000000FF) * factor;
+	
+	*color = A | (R & 0x00FF0000) | (G & 0x0000FF00) | (B & 0x000000FF);
+}
+
+void DrawPixel(int x, int y, color_t color)
 {
 	colorBuffer[(RESOLUTION_WINDOW_WIDTH * y) + x] = color;
 }
 
-void DrawRect(int x, int y, int width, int height, uint32_t color)
+void DrawRect(int x, int y, int width, int height, color_t color)
 {
 	for (int i = x; i < x + width + 1; i++)
 	{
@@ -110,7 +122,7 @@ void DrawRect(int x, int y, int width, int height, uint32_t color)
 	}
 }
 
-void DrawLine(int x0, int y0, int x1, int y1, uint32_t color) // DDA algorithm
+void DrawLine(int x0, int y0, int x1, int y1, color_t color) // DDA algorithm
 {
 	// find rise(delta_y) and run(delta_x) values
 	int deltaX = (x1 - x0);
