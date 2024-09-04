@@ -13,7 +13,7 @@
 bool CheckWallCollision(float x, float y);
 bool CheckMapBoundary(float x, float y);
 
-void RenderMap(void);
+void RenderMiniMapGrid(void);
 
 int GetMapAt(int i, int j);
 

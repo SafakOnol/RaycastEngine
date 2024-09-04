@@ -181,7 +181,7 @@ void CastAllRays(void)
 	}
 };
 
-void RenderRays()
+void RenderMiniMapRays()
 {
 	for (int i = 0; i < NUM_RAYS; i += 25)
 	{

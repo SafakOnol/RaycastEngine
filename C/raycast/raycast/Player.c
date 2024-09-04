@@ -30,7 +30,7 @@ void MovePlayer(float deltaTime)
 	}
 };
 
-void RenderPlayer()
+void RenderMiniMapPlayer()
 {
 	DrawRect
 	(

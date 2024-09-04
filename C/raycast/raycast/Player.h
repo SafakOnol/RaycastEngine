@@ -20,6 +20,6 @@ extern player_t player;
 
 void MovePlayer(float deltaTime);
 
-void RenderPlayer(void);
+void RenderMiniMapPlayer(void);
 
 #endif

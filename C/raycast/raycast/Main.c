@@ -10,6 +10,7 @@
 #include "Ray.h"
 #include "Player.h"
 #include "Wall.h"
+#include "Sprite.h"
 
 // --- GLOBAL VARIABLES --- //
 
@@ -40,7 +41,7 @@ void ComputeDeltaTime() // cricital!
 
 void GameSetup()
 {
-	LoadWallTextures();
+	LoadTextures();
 }
 
 /// <Color Palet>
@@ -53,9 +54,10 @@ void GameSetup()
 
 void RenderMiniMap(void)
 {
-	RenderMap();
-	RenderRays();
-	RenderPlayer();
+	RenderMiniMapGrid();
+	RenderMiniMapRays();
+	RenderMiniMapPlayer();
+	RenderMiniMapSprites();
 }
 
 // --- GAME LOOP FUNCTIONS --- //
@@ -115,13 +117,14 @@ void Render()
 	ClearColorBuffer(0xFF000000);
 
 	RenderWallProjection();
+	RenderSpriteProjection();
 	RenderMiniMap();
 	RenderColorBuffer();
 }
 
 void ReleaseResources(void)
 {
-	FreeWallTextures();
+	FreeTextures();
 	DestroyWindow();
 }
 

@@ -30,6 +30,6 @@ bool CheckRayFacingLeft(float angle);
 
 void CastRay(float rayAngle, int stripID);
 void CastAllRays(void);
-void RenderRays(void);
+void RenderMiniMapRays(void);
 
 #endif

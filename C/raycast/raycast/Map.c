@@ -42,7 +42,7 @@ int GetMapAt(int i, int j)
 	return map[i][j];
 };
 
-void RenderMap(void)
+void RenderMiniMapGrid(void)
 {
 	for (int i = 0; i < MAP_NUM_ROWS; i++)
 	{
