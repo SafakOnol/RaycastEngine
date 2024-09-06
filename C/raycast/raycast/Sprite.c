@@ -63,7 +63,7 @@ void RenderSpriteProjection(void)
 		sprite_t sprite = visibleSprites[i];
 
 		// Calculate projected sprite height (TILE_SIZE is the original sprite height since this engine only allows one square size)
-		float spriteHeight	= (TILE_SIZE / sprite.distance) * DISTANCE_TO_PROJECTION_PLANE;
+		float spriteHeight = (TILE_SIZE / sprite.distance) * DISTANCE_TO_PROJECTION_PLANE;
 		float spriteWidth = spriteHeight;
 
 		float spriteTopY = (RESOLUTION_WINDOW_HEIGHT * 0.5) - (spriteHeight * 0.5);
@@ -71,15 +71,23 @@ void RenderSpriteProjection(void)
 
 		float spriteBottomY = (RESOLUTION_WINDOW_HEIGHT * 0.5) + (spriteHeight * 0.5);
 		spriteBottomY = (spriteBottomY > RESOLUTION_WINDOW_HEIGHT) ? RESOLUTION_WINDOW_HEIGHT : spriteBottomY;
-		
-		for (int y = spriteTopY; y < spriteBottomY; y++)
+
+		float spriteAngle = atan2((sprite.y - player.y), (sprite.x - player.x)) - player.rotationAngle;
+
+		float spriteScreenPosX = tan(spriteAngle) * DISTANCE_TO_PROJECTION_PLANE;
+		float spriteLeftX = (RESOLUTION_WINDOW_WIDTH * 0.5) + spriteScreenPosX;
+		float spriteRightX = spriteLeftX + spriteWidth;
+
+		for (int x = spriteLeftX; x < spriteRightX; x++)
 		{
-			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
-			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
-			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
-			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
-			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
+			for (int y = spriteTopY; y < spriteBottomY; y++)
+			{
+				if (x > 0 && x < RESOLUTION_WINDOW_WIDTH && y > 0 && y < RESOLUTION_WINDOW_HEIGHT)
+				{
+					DrawPixel(x, y, 0xFFFF00FF);
+				}
+			}
 		}
-	
+		
 	}
 }
