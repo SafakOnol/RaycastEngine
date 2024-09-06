@@ -149,6 +149,7 @@
     <ClCompile Include="Sprite.c" />
     <ClCompile Include="Texture.c" />
     <ClCompile Include="upng.c" />
+    <ClCompile Include="Utility.c" />
     <ClCompile Include="Wall.c" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureVerts.h" />
     <ClInclude Include="upng.h" />
+    <ClInclude Include="Utility.h" />
     <ClInclude Include="Wall.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

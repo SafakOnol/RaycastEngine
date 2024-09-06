@@ -4,12 +4,12 @@
 player_t player =
 {
 	.x = MAP_NUM_COLS * TILE_SIZE * 0.5,
-	.y = MAP_NUM_ROWS * TILE_SIZE * 0.5,
+	.y = MAP_NUM_ROWS * TILE_SIZE * 0.85,
 	.w = 1,
 	.h = 1,
 	.turnDirection = 0,
 	.walkDirection = 0,
-	.rotationAngle = PI * 0.5,
+	.rotationAngle = PI * 1.5,
 	.turnSpeed = 135 * (PI / 180),
 	.walkSpeed = 200
 };
@@ -17,6 +17,7 @@ player_t player =
 void MovePlayer(float deltaTime)
 {
 	player.rotationAngle += player.turnDirection * (player.turnSpeed * deltaTime);
+	NormalizeAngle(&player.rotationAngle);
 
 	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
 

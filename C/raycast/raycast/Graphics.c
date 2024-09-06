@@ -28,6 +28,13 @@ bool InitializeWindow(void)
 		fullscreenWidth,
 		fullscreenHeight,
 		SDL_WINDOW_BORDERLESS
+
+		/*"Wolf3D",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		RESOLUTION_WINDOW_WIDTH,
+		RESOLUTION_WINDOW_HEIGHT,
+		SDL_WINDOW_BORDERLESS*/
 	);
 	if (!window)
 	{

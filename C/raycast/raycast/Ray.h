@@ -4,8 +4,10 @@
 #include <stdbool.h>
 #include <float.h>
 
+#include "Utility.h"
 #include "Definitions.h"
 #include "Player.h"
+
 
 typedef struct
 {
@@ -19,10 +21,6 @@ typedef struct
 
 extern ray_t rays[NUM_RAYS];	// Decleration of the array in the type of ray_t
 								// This variable is initialized in another file (therefore extern)
-
-void NormalizeAngle(float* angle);
-float DistanceBetweenPoints(float x1, float y1, float x2, float y2);
-
 bool CheckRayFacingUp(float angle);
 bool CheckRayFacingDown(float angle);
 bool CheckRayFacingRight(float angle);
