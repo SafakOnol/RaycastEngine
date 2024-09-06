@@ -60,6 +60,26 @@ void RenderSpriteProjection(void)
 
 	for (int i = 0; i < numVisibleSprites; i++)
 	{
-		// TODO: draw the pixels of the sprite in the correct position
+		sprite_t sprite = visibleSprites[i];
+
+		// Calculate projected sprite height (TILE_SIZE is the original sprite height since this engine only allows one square size)
+		float spriteHeight	= (TILE_SIZE / sprite.distance) * DISTANCE_TO_PROJECTION_PLANE;
+		float spriteWidth = spriteHeight;
+
+		float spriteTopY = (RESOLUTION_WINDOW_HEIGHT * 0.5) - (spriteHeight * 0.5);
+		spriteTopY = (spriteTopY < 0) ? 0 : spriteTopY;
+
+		float spriteBottomY = (RESOLUTION_WINDOW_HEIGHT * 0.5) + (spriteHeight * 0.5);
+		spriteBottomY = (spriteBottomY > RESOLUTION_WINDOW_HEIGHT) ? RESOLUTION_WINDOW_HEIGHT : spriteBottomY;
+		
+		for (int y = spriteTopY; y < spriteBottomY; y++)
+		{
+			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
+			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
+			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
+			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
+			DrawPixel(RESOLUTION_WINDOW_WIDTH * 0.5, y, 0xFF0000FF);
+		}
+	
 	}
 }
