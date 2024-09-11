@@ -4,13 +4,13 @@
 player_t player =
 {
 	.x = MAP_NUM_COLS * TILE_SIZE * 0.5,
-	.y = MAP_NUM_ROWS * TILE_SIZE * 0.85,
+	.y = MAP_NUM_ROWS * TILE_SIZE * 0.65,
 	.w = 1,
 	.h = 1,
 	.turnDirection = 0,
 	.walkDirection = 0,
 	.rotationAngle = PI * 1.5,
-	.turnSpeed = 135 * (PI / 180),
+	.turnSpeed = 90 * (PI / 180),
 	.walkSpeed = 200
 };
 
@@ -24,7 +24,10 @@ void MovePlayer(float deltaTime)
 	float newX = player.x + cos(player.rotationAngle) * moveStep;
 	float newY = player.y + sin(player.rotationAngle) * moveStep;
 
-	if (!CheckWallCollision(newX, newY))
+	float collX = player.x + cos(player.rotationAngle) * 4 * moveStep;
+	float collY = player.y + sin(player.rotationAngle) * 4 * moveStep;
+
+	if (!CheckWallCollision(collX, collY))
 	{
 		player.x = newX;
 		player.y = newY;

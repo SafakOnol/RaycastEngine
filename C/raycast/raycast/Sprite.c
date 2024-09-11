@@ -4,11 +4,11 @@
 
 static sprite_t sprites[NUM_SPRITES] =
 {
-	{ .x = 640, .y = 630, .textureArrayIndex = 13 }, // Armor
-	{ .x = 250, .y = 500, .textureArrayIndex = 11 }, // Table
-	{ .x = 250, .y = 500, .textureArrayIndex = 10 }, // Light
-	{ .x = 840, .y = 330, .textureArrayIndex = 12 }, // Guard
-	{ .x = 740, .y = 530, .textureArrayIndex = 9 }  // Barrel
+	{ .x = -32 + 64 * 12, .y = -32 + 64 * 14, .textureArrayIndex = 13 }, // Armor
+	{ .x = -32 + 64 * 10, .y = -32 + 64 * 13, .textureArrayIndex = 11 }, // Table
+	{ .x = -32 + 64 * 10, .y = -32 + 64 * 13, .textureArrayIndex = 10 }, // Light
+	{ .x = -32 + 64 * 3,  .y = -32 + 64 * 5, .textureArrayIndex = 12 }, // Guard
+	{ .x = -32 + 64 * 4,  .y = -32 + 64 * 3, .textureArrayIndex = 12 }  // Guard
 
 };
 
