@@ -35,7 +35,7 @@ void CastRay(float rayAngle, int stripID)
 	bool	bIsAHorizontalWallHit = false;
 	float	horizontalWallHitX = 0;
 	float	horizontalWallHitY = 0;
-	int		horizontalWallContent = 0;
+	int		horizontalWallTextureArrayIndex = 0;
 
 	// calculate coordinates of nearest horizontal grid intersection
 	// y
@@ -66,7 +66,7 @@ void CastRay(float rayAngle, int stripID)
 			// ray hit a wall!
 			horizontalWallHitX = nextHorizontalLineX;
 			horizontalWallHitY = nextHorizontalLineY;
-			horizontalWallContent = GetMapAt((int)floor(yTemp / TILE_SIZE), (int)floor(xTemp / TILE_SIZE));
+			horizontalWallTextureArrayIndex = GetMapAt((int)floor(yTemp / TILE_SIZE), (int)floor(xTemp / TILE_SIZE));
 			bIsAHorizontalWallHit = true;
 			break;
 		}
@@ -84,7 +84,7 @@ void CastRay(float rayAngle, int stripID)
 	bool	bIsAVerticalWallHit = false;
 	float	verticalWallHitX = 0;
 	float	verticalWallHitY = 0;
-	int		verticalWallContent = 0;
+	int		verticalWallTextureArrayIndex = 0;
 
 	// calculate coordinates of nearest horizontal grid intersection
 	// x
@@ -115,7 +115,7 @@ void CastRay(float rayAngle, int stripID)
 			// ray hit a wall!
 			verticalWallHitX = nextVerticalLineX;
 			verticalWallHitY = nextVerticalLineY;
-			verticalWallContent = GetMapAt((int)floor(yTemp / TILE_SIZE), (int)floor(xTemp / TILE_SIZE));
+			verticalWallTextureArrayIndex = GetMapAt((int)floor(yTemp / TILE_SIZE), (int)floor(xTemp / TILE_SIZE));
 			bIsAVerticalWallHit = true;
 			break;
 		}
@@ -141,7 +141,7 @@ void CastRay(float rayAngle, int stripID)
 		rays[stripID].distance = verticalHitDistance;
 		rays[stripID].wallHitX = verticalWallHitX;
 		rays[stripID].wallHitY = verticalWallHitY;
-		rays[stripID].wallHitContent = verticalWallContent;
+		rays[stripID].textureArrayIndex = verticalWallTextureArrayIndex;
 		rays[stripID].bIsAVerticalHit = true;
 		rays[stripID].rayAngle = rayAngle;
 	}
@@ -150,7 +150,7 @@ void CastRay(float rayAngle, int stripID)
 		rays[stripID].distance = horizontalHitDistance;
 		rays[stripID].wallHitX = horizontalWallHitX;
 		rays[stripID].wallHitY = horizontalWallHitY;
-		rays[stripID].wallHitContent = horizontalWallContent;
+		rays[stripID].textureArrayIndex = horizontalWallTextureArrayIndex;
 		rays[stripID].bIsAVerticalHit = false;
 		rays[stripID].rayAngle = rayAngle;
 	}

@@ -1,12 +1,15 @@
 #include "Sprite.h"
 
-#define NUM_SPRITES 3
+#define NUM_SPRITES 5
 
 static sprite_t sprites[NUM_SPRITES] =
 {
-	{ .x = 640, .y = 630, .textureArrayIndex = 9 },  // Barrel
-	{ .x = 640, .y = 930, .textureArrayIndex = 11 }, // Table
-	{ .x = 640, .y = 830, .textureArrayIndex = 12 }   // Guard
+	{ .x = 640, .y = 630, .textureArrayIndex = 13 }, // Armor
+	{ .x = 250, .y = 500, .textureArrayIndex = 11 }, // Table
+	{ .x = 250, .y = 500, .textureArrayIndex = 10 }, // Light
+	{ .x = 840, .y = 330, .textureArrayIndex = 12 }, // Guard
+	{ .x = 740, .y = 530, .textureArrayIndex = 9 }  // Barrel
+
 };
 
 void RenderMiniMapSprites(void)

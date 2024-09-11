@@ -16,7 +16,7 @@ typedef struct
 	float wallHitY;
 	float distance;
 	bool bIsAVerticalHit;
-	int wallHitContent;
+	int textureArrayIndex;
 } ray_t;
 
 extern ray_t rays[NUM_RAYS];	// Decleration of the array in the type of ray_t

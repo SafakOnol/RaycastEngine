@@ -35,7 +35,7 @@ void RenderWallProjection(void)
 			textureOffsetX		= (int)rays[x].wallHitX % TILE_SIZE;
 		}
 
-		int textureArrayIndex	= rays[x].wallHitContent - 1; // 0 is used for empty space, therefore map content and texture array has 1 difference
+		int textureArrayIndex	= rays[x].textureArrayIndex - 1; // 0 is used for empty space, therefore map content and texture array has 1 difference
 
 		// Query texture width and height from upng
 		int texture_width		= upng_get_width(textures[textureArrayIndex]);
