@@ -138,7 +138,8 @@ void RenderSpriteProjection(void)
 					color_t* spriteTextureBuffer = (color_t*)upng_get_buffer(textures[sprite.textureArrayIndex]);
 					color_t texelColor = spriteTextureBuffer[(textureWidth * textureOffsetY) + textureOffsetX];
 					
-					if (texelColor != 0xFFFF00FF)
+					// check if sprite is behind a wall & ignore the magenta color of the sprite
+					if (sprite.distance < rays[x].distance && texelColor != 0xFFFF00FF)
 					{
 						DrawPixel(x, y, texelColor);
 					}

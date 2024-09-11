@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Texture.h"
 #include "Utility.h"
+#include "Ray.h"
 
 typedef struct
 {
