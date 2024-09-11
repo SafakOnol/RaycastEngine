@@ -9,7 +9,7 @@
 
 #define TILE_SIZE 64
 
-#define NUM_TEXTURES 9
+#define NUM_TEXTURES 14
 
 #define MINIMAP_SCALE_FACTOR 0.15
 
@@ -30,7 +30,7 @@
 ///////////////////////////
 
 #define RESOLUTION_WINDOW_WIDTH 1024
-#define RESOLUTION_WINDOW_HEIGHT 576
+#define RESOLUTION_WINDOW_HEIGHT 768
 
 /*
 	## 4:3

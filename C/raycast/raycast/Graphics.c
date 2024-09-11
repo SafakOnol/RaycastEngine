@@ -5,7 +5,7 @@ static SDL_Renderer* renderer = NULL;
 static color_t* colorBuffer = NULL;
 static SDL_Texture* colorBufferTexture;
 
-wallColorFadeFactor = 2.0f;
+wallColorFadeFactor = 0.8f;
 
 bool InitializeWindow(void)
 {
@@ -25,9 +25,16 @@ bool InitializeWindow(void)
 		"Wolf3D",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		fullscreenWidth,
+		fullscreenWidth * 9/21 * 4/3,
 		fullscreenHeight,
 		SDL_WINDOW_BORDERLESS
+
+		/*"Wolf3D",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		RESOLUTION_WINDOW_WIDTH,
+		RESOLUTION_WINDOW_HEIGHT,
+		SDL_WINDOW_BORDERLESS*/
 	);
 	if (!window)
 	{

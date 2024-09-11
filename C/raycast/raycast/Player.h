@@ -4,6 +4,7 @@
 #include "Definitions.h"
 #include "Map.h" // TODO : Find a way to adjust player start location without including map in player. 
 #include "Graphics.h"
+#include "Utility.h"
 
 typedef struct
 {
@@ -20,6 +21,6 @@ extern player_t player;
 
 void MovePlayer(float deltaTime);
 
-void RenderPlayer(void);
+void RenderMiniMapPlayer(void);
 
 #endif
