@@ -98,10 +98,11 @@ void RenderSpriteProjection(void)
 	{
 		sprite_t sprite = visibleSprites[i];
 
-		int size = sizeof(visibleSprites) / sizeof(visibleSprites[0]);
+		// fix fish eye distortion for sprites
+		float perpendicularDistance = sprite.distance * (float)cos(sprite.angle);
 
 		// Calculate projected sprite height (TILE_SIZE is the original sprite height since this engine only allows one square size)
-		float spriteHeight = (TILE_SIZE / sprite.distance) * DISTANCE_TO_PROJECTION_PLANE;
+		float spriteHeight = (TILE_SIZE / perpendicularDistance) * DISTANCE_TO_PROJECTION_PLANE;
 		float spriteWidth = spriteHeight;
 
 		float spriteTopY = (RESOLUTION_WINDOW_HEIGHT * 0.5) - (spriteHeight * 0.5);
