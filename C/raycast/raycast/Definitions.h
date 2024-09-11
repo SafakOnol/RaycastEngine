@@ -30,7 +30,7 @@
 ///////////////////////////
 
 #define RESOLUTION_WINDOW_WIDTH 1024
-#define RESOLUTION_WINDOW_HEIGHT 576
+#define RESOLUTION_WINDOW_HEIGHT 768
 
 /*
 	## 4:3

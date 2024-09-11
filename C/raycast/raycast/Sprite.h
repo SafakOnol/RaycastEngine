@@ -20,4 +20,5 @@ typedef struct
 void RenderMiniMapSprites(void);
 void RenderSpriteProjection(void);
 
+
 #endif // !SPRITE_H

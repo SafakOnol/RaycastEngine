@@ -5,8 +5,8 @@
 static sprite_t sprites[NUM_SPRITES] =
 {
 	{ .x = 640, .y = 630, .textureArrayIndex = 9 },  // Barrel
-	{ .x = 1300, .y = 700, .textureArrayIndex = 11 }, // Table
-	{ .x = 140, .y = 630, .textureArrayIndex = 12 }   // Guard
+	{ .x = 640, .y = 930, .textureArrayIndex = 11 }, // Table
+	{ .x = 640, .y = 830, .textureArrayIndex = 12 }   // Guard
 };
 
 void RenderMiniMapSprites(void)
@@ -61,11 +61,44 @@ void RenderSpriteProjection(void)
 		{
 			sprites[i].bIsVisible = false;
 		}
+
+		// SORT BY DISTANCE - bubble sort
+
+		// APPROACH 1
+		for (int i = 0; i < numVisibleSprites - 1; i++)
+		{
+			for (int j = i +1 ; j < numVisibleSprites; j++)
+			{
+				if (visibleSprites[i].distance < visibleSprites[j].distance)
+				{
+					sprite_t temp = visibleSprites[i];
+					visibleSprites[i] = visibleSprites[j];
+					visibleSprites[j] = temp;
+				}
+			}
+		}
+
+		// APPROACH 2
+		/*for (int i = 0; i < numVisibleSprites - 1; i++)
+		{
+			for (int j = 0; j < numVisibleSprites - 1; j++)
+			{
+				if (visibleSprites[j].distance < visibleSprites[j+1].distance)
+				{
+					sprite_t temp = visibleSprites[j];
+					visibleSprites[j] = visibleSprites[j + 1];
+					visibleSprites[j + 1] = temp;
+				}
+			}
+		}*/
+
 	}
 
 	for (int i = 0; i < numVisibleSprites; i++)
 	{
 		sprite_t sprite = visibleSprites[i];
+
+		int size = sizeof(visibleSprites) / sizeof(visibleSprites[0]);
 
 		// Calculate projected sprite height (TILE_SIZE is the original sprite height since this engine only allows one square size)
 		float spriteHeight = (TILE_SIZE / sprite.distance) * DISTANCE_TO_PROJECTION_PLANE;

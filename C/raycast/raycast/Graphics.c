@@ -25,7 +25,7 @@ bool InitializeWindow(void)
 		"Wolf3D",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		fullscreenWidth,
+		fullscreenWidth * 9/21 * 4/3,
 		fullscreenHeight,
 		SDL_WINDOW_BORDERLESS
 
