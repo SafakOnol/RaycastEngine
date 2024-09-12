@@ -23,8 +23,23 @@ void MovePlayer(float deltaTime)
 	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
 	float strafeStep = player.strafeDirection * (player.walkSpeed * deltaTime);
 
-	float newX = player.x + cos(player.rotationAngle) * moveStep + cos(player.rotationAngle + PI/2) * strafeStep;
-	float newY = player.y + sin(player.rotationAngle) * moveStep + sin(player.rotationAngle + PI/2) * strafeStep;
+	// Calculate movement vector
+	float deltaX = cos(player.rotationAngle) * moveStep + cos(player.rotationAngle + PI / 2) * strafeStep;
+	float deltaY = sin(player.rotationAngle) * moveStep + sin(player.rotationAngle + PI / 2) * strafeStep;
+
+	// Calculate the length of the movement vector
+	float length = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+	// Normalize movement vector if it's longer than the maximum allowed movement
+	if (length > player.walkSpeed + deltaTime);
+	{
+		float normalizedLength = player.walkSpeed * deltaTime / length;
+		deltaX *= normalizedLength;
+		deltaY *= normalizedLength;
+	}
+
+	float newX = player.x + deltaX;
+	float newY = player.y + deltaY;
 
 	if (!CheckWallCollision(newX, newY))
 	{
