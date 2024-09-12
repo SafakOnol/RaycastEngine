@@ -3,15 +3,16 @@
 
 player_t player =
 {
-	.x = MAP_NUM_COLS * TILE_SIZE * 0.5,
-	.y = MAP_NUM_ROWS * TILE_SIZE * 0.85,
-	.w = 1,
-	.h = 1,
-	.turnDirection = 0,
-	.walkDirection = 0,
-	.rotationAngle = PI * 1.5,
-	.turnSpeed = 135 * (PI / 180),
-	.walkSpeed = 200
+	.x					= MAP_NUM_COLS * TILE_SIZE * 0.5,
+	.y					= MAP_NUM_ROWS * TILE_SIZE * 0.85,
+	.w					= 1,
+	.h					= 1,
+	.turnDirection		= 0,
+	.walkDirection		= 0,
+	.strafeDirection	= 0,
+	.rotationAngle		= PI * 1.5,
+	.turnSpeed			= 135 * (PI / 180),
+	.walkSpeed			= 200
 };
 
 void MovePlayer(float deltaTime)
@@ -20,9 +21,10 @@ void MovePlayer(float deltaTime)
 	NormalizeAngle(&player.rotationAngle);
 
 	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
+	float strafeStep = player.strafeDirection * (player.walkSpeed * deltaTime);
 
-	float newX = player.x + cos(player.rotationAngle) * moveStep;
-	float newY = player.y + sin(player.rotationAngle) * moveStep;
+	float newX = player.x + cos(player.rotationAngle) * moveStep + cos(player.rotationAngle + PI/2) * strafeStep;
+	float newY = player.y + sin(player.rotationAngle) * moveStep + sin(player.rotationAngle + PI/2) * strafeStep;
 
 	if (!CheckWallCollision(newX, newY))
 	{

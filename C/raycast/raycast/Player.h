@@ -10,8 +10,9 @@ typedef struct
 {
 	float x, y;
 	float w, h;
-	int turnDirection; // -1 for Left, +1 for Right
-	int walkDirection; // -1 for Left, +1 for Right
+	int turnDirection;		// -1 for Left, +1 for Right
+	int walkDirection;		// -1 for Left, +1 for Right
+	int strafeDirection;	// -1 for Left, +1 for Right 
 	float rotationAngle;
 	float walkSpeed;
 	float turnSpeed;

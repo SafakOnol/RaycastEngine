@@ -78,26 +78,34 @@ void HandleInput()
 		{
 			if (event.key.keysym.sym == SDLK_ESCAPE)
 				bIsGameRunning = false;
-			if (event.key.keysym.sym == SDLK_UP)
+			if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_w)
 				player.walkDirection = +1;
-			if (event.key.keysym.sym == SDLK_DOWN)
+			if (event.key.keysym.sym == SDLK_DOWN || event.key.keysym.sym == SDLK_s)
 				player.walkDirection = -1;
 			if (event.key.keysym.sym == SDLK_RIGHT)
 				player.turnDirection = +1;
 			if (event.key.keysym.sym == SDLK_LEFT)
 				player.turnDirection = -1;
+			if (event.key.keysym.sym == SDLK_d)  // Strafe right
+				player.strafeDirection = +1;
+			if (event.key.keysym.sym == SDLK_a)  // Strafe left
+				player.strafeDirection = -1;
 			break;
 		}
 		case SDL_KEYUP:
 		{
-			if (event.key.keysym.sym == SDLK_UP)
+			if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_w)
 				player.walkDirection = 0;
-			if (event.key.keysym.sym == SDLK_DOWN)
+			if (event.key.keysym.sym == SDLK_DOWN || event.key.keysym.sym == SDLK_s)
 				player.walkDirection = 0;
 			if (event.key.keysym.sym == SDLK_RIGHT)
 				player.turnDirection = 0;
 			if (event.key.keysym.sym == SDLK_LEFT)
 				player.turnDirection = 0;
+			if (event.key.keysym.sym == SDLK_d)
+				player.strafeDirection = 0;
+			if (event.key.keysym.sym == SDLK_a)
+				player.strafeDirection = 0;
 			break;
 		}
 	}
