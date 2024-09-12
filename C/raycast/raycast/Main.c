@@ -65,51 +65,57 @@ void RenderMiniMap(void)
 void HandleInput()
 {
 	SDL_Event event;
-	SDL_PollEvent(&event);
+	const Uint8* keystate = SDL_GetKeyboardState(NULL);
 
-	switch (event.type)
+	int walkDirection = 0;
+	int turnDirection = 0;
+	int strafeDirection = 0;
+
+	while (SDL_PollEvent(&event))
 	{
-		case SDL_QUIT:
+		switch (event.type)
 		{
+		case SDL_QUIT:
 			bIsGameRunning = false;
 			break;
-		}
 		case SDL_KEYDOWN:
-		{
 			if (event.key.keysym.sym == SDLK_ESCAPE)
 				bIsGameRunning = false;
-			if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_w)
-				player.walkDirection = +1;
-			if (event.key.keysym.sym == SDLK_DOWN || event.key.keysym.sym == SDLK_s)
-				player.walkDirection = -1;
-			if (event.key.keysym.sym == SDLK_RIGHT)
-				player.turnDirection = +1;
-			if (event.key.keysym.sym == SDLK_LEFT)
-				player.turnDirection = -1;
-			if (event.key.keysym.sym == SDLK_d)  // Strafe right
-				player.strafeDirection = +1;
-			if (event.key.keysym.sym == SDLK_a)  // Strafe left
-				player.strafeDirection = -1;
-			break;
-		}
-		case SDL_KEYUP:
-		{
-			if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_w)
-				player.walkDirection = 0;
-			if (event.key.keysym.sym == SDLK_DOWN || event.key.keysym.sym == SDLK_s)
-				player.walkDirection = 0;
-			if (event.key.keysym.sym == SDLK_RIGHT)
-				player.turnDirection = 0;
-			if (event.key.keysym.sym == SDLK_LEFT)
-				player.turnDirection = 0;
-			if (event.key.keysym.sym == SDLK_d)
-				player.strafeDirection = 0;
-			if (event.key.keysym.sym == SDLK_a)
-				player.strafeDirection = 0;
 			break;
 		}
 	}
+
+	// Turn direction handling 
+	if (keystate[SDL_SCANCODE_LEFT])
+		turnDirection = -1;
+	if (keystate[SDL_SCANCODE_RIGHT])
+		turnDirection = 1;
+
+	// Walk direction handling
+    if (keystate[SDL_SCANCODE_W])
+        walkDirection =  1;
+    if (keystate[SDL_SCANCODE_S])
+        walkDirection = -1;
+
+    // Strafe direction handling
+    if (keystate[SDL_SCANCODE_A])
+        strafeDirection = -1;
+    if (keystate[SDL_SCANCODE_D])
+        strafeDirection =  1;
+
+    // Update player directions after all key state checks
+    player.walkDirection	= walkDirection;
+    player.strafeDirection	= strafeDirection;
+    player.turnDirection	= turnDirection;
+
+    // Debug output for movement states
+    //printf("Walk: %d, Strafe: %d, Turn: %d\n", player.walkDirection, player.strafeDirection, player.turnDirection);
+
+    // Flush key events to clear the event queue after processing inputs
+    SDL_FlushEvent(SDL_KEYDOWN);
+    SDL_FlushEvent(SDL_KEYUP);
 }
+
 
 void Update()
 {
@@ -148,7 +154,7 @@ int main(int argc, char* args[])
 		Update();
 		Render();
 	}
-		
+
 	ReleaseResources();
 
 	return EXIT_SUCCESS;

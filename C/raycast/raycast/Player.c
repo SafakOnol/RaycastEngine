@@ -11,7 +11,7 @@ player_t player =
 	.walkDirection		= 0,
 	.strafeDirection	= 0,
 	.rotationAngle		= PI * 1.5,
-	.turnSpeed			= 135 * (PI / 180),
+	.turnSpeed			= 90 * (PI / 180),
 	.walkSpeed			= 200
 };
 
@@ -20,22 +20,26 @@ void MovePlayer(float deltaTime)
 	player.rotationAngle += player.turnDirection * (player.turnSpeed * deltaTime);
 	NormalizeAngle(&player.rotationAngle);
 
-	float moveStep = player.walkDirection * (player.walkSpeed * deltaTime);
-	float strafeStep = player.strafeDirection * (player.walkSpeed * deltaTime);
+	float forwardStep	= player.walkDirection * (player.walkSpeed * deltaTime);
+	float sideStep		= player.strafeDirection * (player.walkSpeed * deltaTime);
 
 	// Calculate movement vector
-	float deltaX = cos(player.rotationAngle) * moveStep + cos(player.rotationAngle + PI / 2) * strafeStep;
-	float deltaY = sin(player.rotationAngle) * moveStep + sin(player.rotationAngle + PI / 2) * strafeStep;
+	float moveAngle = player.rotationAngle;
+	float strafeAngle = player.rotationAngle + PI / 2;
 
-	// Calculate the length of the movement vector
-	float length = sqrt((deltaX * deltaX) + (deltaY * deltaY));
+	float deltaX = cos(moveAngle) * forwardStep + cos(strafeAngle) * sideStep;
+	float deltaY = sin(moveAngle) * forwardStep + sin(strafeAngle) * sideStep;
 
-	// Normalize movement vector if it's longer than the maximum allowed movement
-	if (length > player.walkSpeed + deltaTime);
+	// Normalize movement if moving diagonally
+	if (player.walkDirection != 0 && player.strafeDirection != 0)
 	{
-		float normalizedLength = player.walkSpeed * deltaTime / length;
-		deltaX *= normalizedLength;
-		deltaY *= normalizedLength;
+		float length = sqrt(deltaX * deltaX + deltaY * deltaY);
+		if (length > 0)
+		{
+			float normalizedLength = player.walkSpeed * deltaTime / length;
+			deltaX *= normalizedLength;
+			deltaY *= normalizedLength;
+		}
 	}
 
 	float newX = player.x + deltaX;
